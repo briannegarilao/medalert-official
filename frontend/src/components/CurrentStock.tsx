@@ -1,10 +1,18 @@
+import { useNavigate } from "react-router-dom";
+
 function Stock() {
-    const mockData = [
-        { name: "Medicine A", remainingStock: 10, hasStock: true },
-        { name: "Medicine B", remainingStock: 0, hasStock: false },
-        { name: "Medicine C", remainingStock: 5, hasStock: true },
-        { name: "Medicine D", remainingStock: 0, hasStock: false },
-      ];
+  const mockData = [
+    { name: "Medicine A", remainingStock: 10, hasStock: true },
+    { name: "Medicine B", remainingStock: 0, hasStock: false },
+    { name: "Medicine C", remainingStock: 5, hasStock: true },
+    { name: "Medicine D", remainingStock: 0, hasStock: false },
+  ];
+
+  const navigate = useNavigate();
+
+  const handleStatus = () => {
+    navigate("/HistoryLogs");
+  };
 
   return (
     <div
@@ -12,10 +20,7 @@ function Stock() {
       style={{ width: "100%", maxWidth: "500px", padding: "1rem" }}
     >
       <div className="card-body">
-        <h2
-          className="card-title"
-          style={{ textAlign: "left", fontSize: 20 }}
-        >
+        <h2 className="card-title" style={{ textAlign: "left", fontSize: 20 }}>
           Current Stock
         </h2>
         <div
@@ -53,8 +58,12 @@ function Stock() {
             </div>
           ))}
         </div>
-        <div className="row" style={{marginTop: 10}}>
-          <button type="button" className="btn btn-light">
+        <div className="row" style={{ marginTop: 10 }}>
+          <button
+            type="button"
+            className="btn btn-light"
+            onClick={handleStatus}
+          >
             Check all status
           </button>
         </div>
