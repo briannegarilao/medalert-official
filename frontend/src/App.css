@@ -1,0 +1,54 @@
+.text-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #888;
+  margin: 1rem 0;
+}
+
+.text-divider::before,
+.text-divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid #ddd;
+  margin: 0 1rem;
+}
+
+.sidebar-text {
+  color: #133E87;
+}
+
+.plain-divider {
+  border-top: 1px solid black;
+  margin: 10px 0;
+}
+
+/* Modal overlay background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensures it’s above other content */
+}
+
+/* Modal content styling */
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  width: 300px;
+  border-radius: 8px;
+}
+
+/* Highlight the selected date range in the calendar */
+.react-calendar .highlight {
+  background-color: #FFDD57; /* Choose any color you like */
+  border-radius: 50%;
+  color: white;
+}
+
