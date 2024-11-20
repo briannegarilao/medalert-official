@@ -12,11 +12,9 @@ function Dashboard() {
   return (
     <>
       <div className="d-flex">
-        
         <div>
-            <Sidebar />
+          <Sidebar />
         </div>
-
 
         <div className="container" style={{ flex: 1, marginTop: 20 }}>
           <div className="row">
@@ -37,9 +35,7 @@ function Dashboard() {
 
               {/* Second Row for the First Two Columns */}
               <div className="row">
-
-                      <Carousel />
-
+                <Carousel />
               </div>
             </div>
 
@@ -57,8 +53,6 @@ function Dashboard() {
             </div>
           </div>
         </div>
-
-
       </div>
     </>
   );

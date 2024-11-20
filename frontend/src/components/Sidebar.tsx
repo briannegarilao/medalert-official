@@ -30,7 +30,10 @@ function Sidebar() {
         </div>
 
         <div className="row mb-3">
-          <h2 className="card-title" style={{ textAlign: "left", fontSize: 20, marginTop: 20 }}>
+          <h2
+            className="card-title"
+            style={{ textAlign: "left", fontSize: 20, marginTop: 20 }}
+          >
             MENU
           </h2>
         </div>
@@ -43,9 +46,13 @@ function Sidebar() {
                   <i className="bi bi-house-door-fill"></i>
                 </div>
                 <div className="col-md-10">
-                <Link className="nav-link" aria-current="page" to="/Dashboard">
-                  Dashboard
-                </Link>
+                  <Link
+                    className="nav-link"
+                    aria-current="page"
+                    to="/Dashboard"
+                  >
+                    Dashboard
+                  </Link>
                 </div>
               </li>
 
@@ -76,7 +83,16 @@ function Sidebar() {
 
         <hr style={{ border: "1px solid #000", margin: "20px 0" }} />
 
-        <div className="container" style={{ width: 200, position: 'absolute', bottom: '20px', left: '0', marginLeft:30 }}>
+        <div
+          className="container"
+          style={{
+            width: 200,
+            position: "absolute",
+            bottom: "20px",
+            left: "0",
+            marginLeft: 30,
+          }}
+        >
           <div className="row d-flex align-items-center mb-3">
             <div className="col-md-2">
               <i className="bi bi-question-circle-fill"></i>
@@ -96,7 +112,11 @@ function Sidebar() {
               <i className="bi bi-box-arrow-right"></i>
             </div>
             <div className="col-md-10">
-              <button type="button" className="btn btn-outline-danger" onClick={handleLogOut} >
+              <button
+                type="button"
+                className="btn btn-outline-danger"
+                onClick={handleLogOut}
+              >
                 Log Out
               </button>
             </div>

@@ -1,8 +1,9 @@
+// src/App.tsx
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LogIn from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/Signup";
-import "./App.css";
 import HistoryLogs from "./pages/HistoryLogs";
 import SettingPage from "./pages/Settings";
 import ProfilePage from "./pages/ProfilePage";
