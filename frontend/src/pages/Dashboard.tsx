@@ -4,8 +4,8 @@ import MissedDoses from "../components/MissedDoses";
 import Stock from "../components/CurrentStock";
 import "../App.css";
 import Profile from "../components/Profile";
-import UpMedSched from "../components/UpMedSched";
-import TodaySched from "../components/TodaySched";
+import UpMedSched from "../components/UpcomingMedication/UpMedSched";
+import TodaySched from "../components/TodaySched/TodaySched";
 import Carousel from "../components/Carousel";
 
 function Dashboard() {

@@ -1,5 +1,3 @@
-// src/App.tsx
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LogIn from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
