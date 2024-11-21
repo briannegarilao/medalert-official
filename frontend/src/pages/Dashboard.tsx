@@ -1,12 +1,12 @@
 import "../App.css";
 import Sidebar from "../components/Sidebar";
 import AddMedicineBtn from "../components/DashboardContainer/Add_Medicine_Btn";
-import MissedDoses from "../components/DashboardContainer/MissedDoses";
-import Stock from "../components/DashboardContainer/CurrentStock";
-import Profile from "../components/DashboardContainer/Profile";
-import UpMedSched from "../components/DashboardContainer/UpcomingMedication/UpMedSched";
-import TodaySched from "../components/DashboardContainer/TodaySched/TodaySched";
-import Carousel from "../components/DashboardContainer/Carousel";
+import MissedDoses from "../components/DashboardContainer/MissedDosesContainer/MissedDoses";
+import Stock from "../components/DashboardContainer/CurrentStockContainer/CurrentStock";
+import Profile from "../components/DashboardContainer/ProfileContainer/Profile";
+import UpMedSched from "../components/DashboardContainer/UpcomingMedicationContainer/UpMedSched";
+import TodaySched from "../components/DashboardContainer/TodaySchedContainer/TodaySched";
+import Carousel from "../components/DashboardContainer/MedicinesCarousel/Carousel";
 
 function Dashboard() {
   return (

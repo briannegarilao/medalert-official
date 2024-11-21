@@ -2,7 +2,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database"; // Import for Realtime Database
-import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
