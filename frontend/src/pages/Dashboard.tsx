@@ -1,12 +1,12 @@
-import Sidebar from "../components/Sidebar";
-import AddMedicineBtn from "../components/Add_Medicine_Btn";
-import MissedDoses from "../components/MissedDoses";
-import Stock from "../components/CurrentStock";
 import "../App.css";
-import Profile from "../components/Profile";
-import UpMedSched from "../components/UpcomingMedication/UpMedSched";
-import TodaySched from "../components/TodaySched/TodaySched";
-import Carousel from "../components/Carousel";
+import Sidebar from "../components/Sidebar";
+import AddMedicineBtn from "../components/DashboardContainer/Add_Medicine_Btn";
+import MissedDoses from "../components/DashboardContainer/MissedDoses";
+import Stock from "../components/DashboardContainer/CurrentStock";
+import Profile from "../components/DashboardContainer/Profile";
+import UpMedSched from "../components/DashboardContainer/UpcomingMedication/UpMedSched";
+import TodaySched from "../components/DashboardContainer/TodaySched/TodaySched";
+import Carousel from "../components/DashboardContainer/Carousel";
 
 function Dashboard() {
   return (
@@ -18,8 +18,10 @@ function Dashboard() {
 
         <div className="container" style={{ flex: 1, marginTop: 20 }}>
           <div className="row">
+            {/*  */}
             {/* First Two Columns Section */}
             <div className="col-md-8">
+              {/*  */}
               <div className="row mb-3">
                 {/* First Column */}
                 <div className="col-md-6">
@@ -27,12 +29,14 @@ function Dashboard() {
                   <TodaySched />
                 </div>
 
+                {/*  */}
                 {/* Second Column */}
                 <div className="col-md-6">
                   <UpMedSched />
                 </div>
               </div>
 
+              {/*  */}
               {/* Second Row for the First Two Columns */}
               <div className="row">
                 <Carousel />

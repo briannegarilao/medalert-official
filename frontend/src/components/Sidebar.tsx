@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 
-function Sidebar() {
+export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogOut = () => {
@@ -126,5 +126,3 @@ function Sidebar() {
     </div>
   );
 }
-
-export default Sidebar;

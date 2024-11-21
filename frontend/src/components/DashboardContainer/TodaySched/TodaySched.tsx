@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import MealCard from "./MealCard";
 import { ref, onValue } from "firebase/database";
-import { realtimeDb } from "../../../firebaseConfig"; // Import the correct db for Realtime Database
+import { realtimeDb } from "../../../../firebaseConfig"; // Import the correct db for Realtime Database
 
 interface Medication {
   medicationName: string;
