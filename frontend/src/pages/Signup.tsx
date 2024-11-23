@@ -1,9 +1,9 @@
-import Signup_Container from "../components/Signup_Container";
+import SignUpContainer from "../components/SignUpContainer/SignUpContainer";
 
 function SignUp() {
   return (
     <div style={{ backgroundColor: "#e9ebf8" }}>
-      <Signup_Container />
+      <SignUpContainer />
     </div>
   );
 }

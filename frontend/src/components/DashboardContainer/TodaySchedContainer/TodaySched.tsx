@@ -1,8 +1,7 @@
-// TodaySched.tsx
 import React, { useEffect, useState } from "react";
 import MealCard from "./MealCard";
-import { ref, onValue } from "firebase/database";
-import { realtimeDb } from "../../../../firebaseConfig"; // Import the correct db for Realtime Database
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../../../../firebaseConfig";
 
 interface Medication {
   medicationName: string;
@@ -21,21 +20,33 @@ const TodaySched: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const mealsRef = ref(realtimeDb, "users/currentUser/meals");
+  const fetchMeals = async () => {
+    try {
+      const currentUser = "userId_001"; 
+      const mealsCollection = collection(db, "Users", currentUser, "Medications");                
 
-    const unsubscribe = onValue(mealsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const fetchedMeals: Meal[] = Object.values(data);
-        setMeals(fetchedMeals);
-      } else {
-        setMeals([]); // No meals found
-      }
+      // Query Firestore to get meals
+      const mealsQuery = query(mealsCollection);
+      const querySnapshot = await getDocs(mealsQuery);
+
+      const fetchedMeals: Meal[] = [];
+      querySnapshot.forEach((doc) => {
+        fetchedMeals.push(doc.data() as Meal);
+      });
+
+      setMeals(fetchedMeals);
+    } catch (error) {
+      console.error("Error fetching meals: ", error);
+      setMeals([]); // Fallback in case of error
+    } finally {
       setLoading(false);
-    });
+    }
+  };
 
-    return () => unsubscribe();
+  useEffect(() => {
+  
+
+    fetchMeals();
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 // MedicationCard.tsx
 import React from "react";
+import  Colors from "../../../theme/Colors";
 
 interface MedicationCardProps {
   medicationName?: string;
@@ -10,10 +11,11 @@ interface MedicationCardProps {
 
 const MedicationCard: React.FC<MedicationCardProps> = ({
   medicationName = "No Medication",
-  dose = "",
-  instruction = "",
-  backgroundColor = "#E0E0E0", // Default light gray color
+  dose = "sample dose",
+  instruction = "this is the instructions",
+  backgroundColor = Colors.blue00, 
 }) => {
+
   return (
     <div className="card" style={{ marginTop: 10 }}>
       <div
