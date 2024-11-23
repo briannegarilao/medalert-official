@@ -2,11 +2,11 @@ import "../App.css";
 import Sidebar from "../components/Sidebar";
 import AddMedicineBtn from "../components/DashboardContainer/Add_Medicine_Btn";
 import MissedDoses from "../components/DashboardContainer/MissedDosesContainer/MissedDoses";
-import Stock from "../components/DashboardContainer/CurrentStockContainer/CurrentStock";
+import Stock from "../components/DashboardContainer/CurrentStockContainer/Stock";
 import Profile from "../components/DashboardContainer/ProfileContainer/Profile";
 import UpMedSched from "../components/DashboardContainer/UpcomingMedicationContainer/UpMedSched";
 import TodaySched from "../components/DashboardContainer/TodaySchedContainer/TodaySched";
-import Carousel from "../components/DashboardContainer/MedicinesCarousel/Carousel";
+import Carousel from "../components/DashboardContainer/MedicinesCarousel/CarouselContainer";
 
 function Dashboard() {
   return (
