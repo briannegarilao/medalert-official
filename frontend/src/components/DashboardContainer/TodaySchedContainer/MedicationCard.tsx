@@ -1,6 +1,5 @@
-// MedicationCard.tsx
 import React from "react";
-import  Colors from "../../../theme/Colors";
+import Colors from "../../../theme/Colors";
 
 interface MedicationCardProps {
   medicationName?: string;
@@ -11,38 +10,40 @@ interface MedicationCardProps {
 
 const MedicationCard: React.FC<MedicationCardProps> = ({
   medicationName = "No Medication",
-  dose = "sample dose",
-  instruction = "this is the instructions",
-  backgroundColor = Colors.blue00, 
+  dose = "no dosage available",
+  instruction = "no instruction available",
+  backgroundColor = Colors.blue00,
 }) => {
-
   return (
-    <div className="card" style={{ marginTop: 10 }}>
-      <div
-        className="card-body"
-        style={{
-          position: "relative",
-          backgroundColor,
-        }}
-      >
-        <div className="d-flex justify-content-between">
-          <label>
-            <h3 style={{ fontSize: 16, color: "white" }}>{medicationName}</h3>
-          </label>
-        </div>
-        {dose && (
-          <p style={{ margin: "0", fontSize: 14, color: "white" }}>
-            Dose: {dose}
-          </p>
-        )}
-        {instruction && (
-          <p style={{ margin: "0", fontSize: 14, color: "white" }}>
-            Instruction: {instruction}
-          </p>
-        )}
-      </div>
+    // MAIN CARD CONTAINER
+    <div style={{ ...styles.card, backgroundColor: backgroundColor }}>
+      {medicationName && <h3 style={styles.heading}>{medicationName}</h3>}
+      {dose && <p style={styles.paragraph}>Dose: {dose}</p>}
+      {instruction && (
+        <p style={styles.paragraph}>Instruction: {instruction}</p>
+      )}
     </div>
   );
 };
 
 export default MedicationCard;
+
+const styles: { [key: string]: React.CSSProperties } = {
+  card: {
+    backgroundColor: "black",
+    padding: "1rem",
+    borderRadius: 8,
+    color: "white",
+    fontSize: 14,
+    display: "flex",
+    flexDirection: "column",
+    gap: 0,
+  },
+  heading: {
+    fontSize: 20,
+    marginBottom: 16,
+  },
+  paragraph: {
+    marginBottom: 0,
+  },
+};
