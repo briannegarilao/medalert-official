@@ -136,6 +136,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 8,
     border: `1px solid ${Colors.gray00}`,
     boxShadow: `0 4px 8px ${Colors.gray00}`,
+
     flex: 1,
     display: "flex",
     flexDirection: "column",
