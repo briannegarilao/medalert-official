@@ -37,17 +37,31 @@ function AddMedicineBtn() {
         <Modal title={stepTitles[currentStep - 1]} onClose={closeModal}>
           {renderStepContent()}
           <div style={styles.navigationButtons}>
-            {currentStep > 1 && (
-              <button onClick={handleBack} style={styles.navButton}>
+            {/* Leftmost Back Button */}
+            {currentStep > 1 ? (
+              <button
+                onClick={handleBack}
+                style={{ ...styles.navButton, marginRight: "auto" }}
+              >
                 Back
               </button>
+            ) : (
+              <div style={{ flex: 1 }} />
             )}
+
+            {/* Rightmost Next/Set Schedule Button */}
             {currentStep < 3 ? (
-              <button onClick={handleNext} style={styles.navButton}>
+              <button
+                onClick={handleNext}
+                style={{ ...styles.navButton, marginLeft: "auto" }}
+              >
                 Next
               </button>
             ) : (
-              <button onClick={closeModal} style={styles.navButton}>
+              <button
+                onClick={closeModal}
+                style={{ ...styles.navButton, marginLeft: "auto" }}
+              >
                 Set Schedule
               </button>
             )}
@@ -76,9 +90,10 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   navigationButtons: {
     display: "flex",
-    flexDirection: "row-reverse",
-    justifyContent: "space-between",
+    flexDirection: "row",
     marginTop: "20px",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   navButton: {
     padding: "8px 16px",

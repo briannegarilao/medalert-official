@@ -1,7 +1,9 @@
 import { useState } from "react";
+import Colors from "../../../theme/Colors";
 
 function MedInfo() {
   const [selectedColor, setSelectedColor] = useState("");
+  const [medicineType, setMedicineType] = useState(""); // State for radio button selection
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
@@ -9,117 +11,128 @@ function MedInfo() {
 
   return (
     <div style={styles.cardBody}>
-      {/* Medicine Name */}
-      <div>
-        <label htmlFor="medicineName" style={styles.label}>
-          Medicine Name
-        </label>
-        <input
-          type="text"
-          id="medicineName"
-          name="medicineName"
-          placeholder="Ex. Amoxicillin"
-          style={styles.input}
-        />
-      </div>
-
-      {/* Antibiotic or Non-Antibiotic */}
-      <div>
-        <div style={styles.col50}>
-          <input type="checkbox" id="exampleCheck1" style={styles.checkbox} />
-          <label htmlFor="exampleCheck1" style={styles.label}>
-            Antibiotics
-          </label>
-        </div>
-        <div style={styles.col10}>
-          <input type="checkbox" id="exampleCheck2" style={styles.checkbox} />
-        </div>
-        <div style={styles.col40}>
-          <label
-            htmlFor="exampleCheck2"
-            style={{ ...styles.label, fontSize: 12 }}
-          >
-            Non-Antibiotic Medication
-          </label>
-        </div>
-      </div>
-
-      {/* Dosage */}
-      <div>
-        <label htmlFor="dosage" style={styles.label}>
-          Dosage
-        </label>
-        <div style={styles.inputGroup}>
+      {/* LEFT HALF */}
+      <div style={styles.lefthalf}>
+        {/* Medicine Name */}
+        <div style={styles.field}>
+          <label style={styles.label}>Medicine Name</label>
           <input
             type="text"
-            id="dosage"
-            name="dosage"
-            placeholder="Ex. 100"
+            id="medicineName"
+            name="medicineName"
+            placeholder="Ex. Amoxicillin"
             style={styles.input}
           />
-          <select id="doseUnit" name="doseUnit" style={styles.select}>
-            <option value="mg">mg</option>
-            <option value="g">g</option>
-            <option value="ml">ml</option>
-            <option value="mcg">mcg</option>
-          </select>
+        </div>
+
+        {/* Antibiotic or Non-Antibiotic */}
+        <div style={styles.field}>
+          <label style={styles.label}>What type of medication is this?</label>
+          <div style={styles.radioFieldContainer}>
+            {/* Antibiotic Option */}
+            <label style={styles.radioLabel}>
+              <input
+                type="radio"
+                id="antibiotic"
+                name="medicineType"
+                value="antibiotic"
+                checked={medicineType === "antibiotic"}
+                onChange={(e) => setMedicineType(e.target.value)}
+                style={styles.radio}
+              />
+              Antibiotics
+            </label>
+            {/* Non-Antibiotic Option */}
+            <label style={styles.radioLabel}>
+              <input
+                type="radio"
+                id="nonAntibiotic"
+                name="medicineType"
+                value="nonAntibiotic"
+                checked={medicineType === "nonAntibiotic"}
+                onChange={(e) => setMedicineType(e.target.value)}
+                style={styles.radio}
+              />
+              Non-Antibiotic Medication
+            </label>
+          </div>
+        </div>
+
+        {/* Choose Color */}
+        <div style={styles.field}>
+          <label style={styles.label}>
+            Choose Color (for easy identification)
+          </label>
+          <div style={styles.colorContainer}>
+            {["purple", "blue", "green", "pink", "orange", "yellow"].map(
+              (color) => (
+                <div
+                  key={color}
+                  onClick={() => handleColorChange(color)}
+                  style={{
+                    ...styles.colorShapes,
+                    backgroundColor: color,
+                    border:
+                      selectedColor === color
+                        ? `2px solid ${Colors.blue01}`
+                        : "2px solid #fff",
+                    boxShadow:
+                      selectedColor === color
+                        ? `0 0 5px ${Colors.blue01}`
+                        : "none",
+                  }}
+                ></div>
+              )
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Special Instruction */}
-      <div>
-        <label htmlFor="specialInstruction" style={styles.label}>
-          Special Instruction
-        </label>
-        <input
-          type="text"
-          id="specialInstruction"
-          name="specialInstruction"
-          placeholder="Ex. after lunch"
-          style={styles.input}
-        />
-      </div>
+      {/* RIGHT HALF */}
+      <div style={styles.rightHalf}>
+        {/* Dosage */}
+        <div style={styles.field}>
+          <label style={styles.label}>Dosage</label>
+          <div style={styles.dosageInputContainer}>
+            <input
+              type="text"
+              id="dosage"
+              name="dosage"
+              placeholder="Ex. 100"
+              style={styles.input}
+            />
+            <select id="doseUnit" name="doseUnit" style={styles.select}>
+              <option value="mg">mg</option>
+              <option value="g">g</option>
+              <option value="ml">ml</option>
+              <option value="mcg">mcg</option>
+            </select>
+          </div>
+        </div>
 
-      {/* Stock */}
-      <div>
-        <label htmlFor="stock" style={styles.label}>
-          How many doses do you currently have left in stock?
-        </label>
-        <select id="stock" name="stock" style={styles.select}>
-          {Array.from({ length: 30 }, (_, index) => (
-            <option key={index} value={index + 1}>
-              {index + 1}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Choose Color */}
-      <div>
-        <label htmlFor="chooseColor" style={styles.label}>
-          Choose Color
-        </label>
-        <div style={styles.colorContainer}>
-          {["purple", "blue", "green", "pink", "orange", "yellow"].map(
-            (color) => (
-              <div
-                key={color}
-                onClick={() => handleColorChange(color)}
-                style={{
-                  ...styles.colorCircle,
-                  backgroundColor: color,
-                  border:
-                    selectedColor === color
-                      ? "2px solid #000"
-                      : "2px solid #ddd",
-                  boxShadow:
-                    selectedColor === color
-                      ? "0 0 5px rgba(0,0,0,0.5)"
-                      : "none",
-                }}
-              ></div>
-            )
-          )}
+        {/* Special Instruction */}
+        <div style={styles.field}>
+          <label style={styles.label}>Special Instruction</label>
+          <input
+            type="text"
+            id="specialInstruction"
+            name="specialInstruction"
+            placeholder="Ex. take with food"
+            style={styles.input}
+          />
+        </div>
+        {/* Stock */}
+        <div style={styles.field}>
+          <label style={styles.label}>
+            How many doses do you currently have left in stock?
+          </label>
+          <select id="stock" name="stock" style={styles.select}>
+            {Array.from({ length: 50 }, (_, index) => (
+              <option key={index} value={index + 1}>
+                {index + 1}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>
@@ -133,59 +146,86 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    gap: "1rem",
+    gap: "24px",
   },
-  label: {
-    marginBottom: "0.5rem",
-    fontSize: "14px",
-    fontWeight: 500,
-    color: "#333",
+  lefthalf: {
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+    gap: "24px",
   },
-  input: {
-    padding: "0.5rem",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "14px",
+  rightHalf: {
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+    gap: "24px",
+  },
+  field: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: "8px",
     width: "100%",
   },
-  checkbox: {
-    marginRight: "0.5rem",
+  label: {
+    fontSize: "16px",
+    textAlign: "left",
+    fontWeight: "500",
   },
-  col50: {
+  input: {
+    border: `1px solid ${Colors.gray00}`,
+    borderRadius: "4px",
+    fontSize: "16px",
+    width: "100%",
+    paddingLeft: "16px",
+    paddingRight: "16px",
+    paddingTop: "8px",
+    paddingBottom: "8px",
+  },
+  radioFieldContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  radioLabel: {
     flex: 1,
     display: "flex",
-    alignItems: "center",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    cursor: "pointer",
+    fontSize: "16px",
+    textAlign: "left",
   },
-  col10: {
-    width: "10%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+  radio: {
+    cursor: "pointer",
+    marginRight: "8px",
+    marginTop: "6px",
   },
-  col40: {
-    flex: 1,
+  dosageInputContainer: {
     display: "flex",
-    alignItems: "center",
-  },
-  inputGroup: {
-    display: "flex",
-    gap: "0.5rem",
+    width: "100%",
+    gap: "8px",
   },
   select: {
-    padding: "0.5rem",
-    border: "1px solid #ccc",
+    border: `1px solid ${Colors.gray00}`,
     borderRadius: "4px",
-    fontSize: "14px",
-    flex: "none",
+    fontSize: "16px",
+    paddingLeft: "8px",
+    paddingRight: "8px",
+    paddingTop: "8px",
+    paddingBottom: "8px",
   },
   colorContainer: {
-    display: "flex",
-    gap: "0.5rem",
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "8px",
   },
-  colorCircle: {
-    width: "20px",
-    height: "20px",
-    borderRadius: "50%",
+  colorShapes: {
+    width: "32px",
+    height: "32px",
     cursor: "pointer",
+    borderRadius: "50%",
   },
 };

@@ -44,13 +44,14 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   modal: {
     backgroundColor: `${colors.white00}`,
-    padding: "1rem",
+    padding: "32px",
     borderRadius: "8px",
-    width: "100%",
     boxShadow: `0 4px 8px ${colors.gray00}`,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    maxWidth: "90%",
+    width: "auto",
   },
   modalHeader: {
     display: "flex",
