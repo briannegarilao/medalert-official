@@ -1,6 +1,6 @@
 import "../App.css";
 import Sidebar from "../components/Sidebar";
-import AddMedicineBtn from "../components/DashboardContainer/Add_Medicine_Btn";
+import AddMedicineBtn from "../components/DashboardContainer/NewMedicine/Add_Medicine_Btn";
 import MissedDoses from "../components/DashboardContainer/MissedDosesContainer/MissedDoses";
 import Stock from "../components/DashboardContainer/CurrentStockContainer/Stock";
 import Profile from "../components/DashboardContainer/ProfileContainer/Profile";

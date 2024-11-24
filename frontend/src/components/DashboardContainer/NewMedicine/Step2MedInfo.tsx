@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "../../App.css";
 
 function SetTime() {
   const [specification, setSpecification] = useState(false);
