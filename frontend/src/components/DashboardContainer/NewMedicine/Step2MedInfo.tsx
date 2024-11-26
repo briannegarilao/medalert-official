@@ -123,7 +123,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxHeight: "400px", // Limit the container height
     overflowY: "auto", // Enable vertical scrolling
     paddingRight: "8px", // Add padding for better UX
-    border: `1px solid ${Colors.gray00}`, // Optional border for visual distinction
     borderRadius: "4px",
   },
   field: {

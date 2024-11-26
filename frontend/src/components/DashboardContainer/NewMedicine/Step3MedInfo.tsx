@@ -45,121 +45,179 @@ function SetDate() {
     const end = new Date(endDate);
     const current = new Date(start);
 
-    // Calculate dates based on frequency
     while (current <= end) {
       if (frequency === "1") {
-        // Daily
         highlightedDates.push(new Date(current));
       } else if (frequency === "2" && current.getDate() % 2 === 0) {
-        // Every Other Day
         highlightedDates.push(new Date(current));
-      } else if (frequency === "3" && current.getDay() === 1) {
-        // Twice a Week (e.g., Mondays)
-        highlightedDates.push(new Date(current));
-      } else if (frequency === "4" && customFrequency) {
-        // Custom frequency logic
-        const interval = parseInt(customFrequency);
-        if (!isNaN(interval) && current.getDate() % interval === 0) {
-          highlightedDates.push(new Date(current));
-        }
       } else if (frequency === "3") {
-        // Twice a Week: Highlight Monday and Thursday
         const dayOfWeek = current.getDay();
         if (dayOfWeek === 1 || dayOfWeek === 4) {
-          // Monday (1) and Thursday (4)
+          highlightedDates.push(new Date(current));
+        }
+      } else if (frequency === "4" && customFrequency) {
+        const interval = parseInt(customFrequency);
+        if (
+          !isNaN(interval) &&
+          (current.getDate() - start.getDate()) % interval === 0
+        ) {
           highlightedDates.push(new Date(current));
         }
       }
-      // Increment by 1 day for each iteration
       current.setDate(current.getDate() + 1);
     }
 
     return highlightedDates;
   };
 
+  // Get today's date for outline styling
+  const today = new Date();
+
   return (
-    <div
-      className="card-body"
-      style={{ width: "100%", maxWidth: "300px", margin: "0 auto" }}
-    >
-      <div className="row mb-3">
-        <label htmlFor="DayFrequency" className="form-label">
-          How frequent are you going to take your medication?
-        </label>
-        <select
-          className="form-select"
-          name="DayFrequency"
-          id="DayFrequency"
-          value={frequency}
-          onChange={onFrequencyChange}
-        >
-          {[
-            "Daily",
-            "Every Other Day",
-            "Twice a Week",
-            "Others, please specify",
-          ].map((option, index) => (
-            <option key={index} value={index + 1}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {frequency === "4" && (
-        <div className="row mb-3">
-          <label htmlFor="CustomFrequency" className="form-label">
-            Please specify the frequency (Ex. every 3 days)
+    <div style={styles.cardBody}>
+      {/* LEFT HALF */}
+      <div style={styles.leftHalf}>
+        <div style={styles.field}>
+          <label style={styles.label}>
+            How frequent are you going to take your medication?
           </label>
-          <input
-            type="text"
-            className="form-control"
-            id="CustomFrequency"
-            value={customFrequency}
-            onChange={onCustomFrequencyChange}
-            placeholder="Ex. 3"
-          />
+          <select
+            style={styles.select}
+            value={frequency}
+            onChange={onFrequencyChange}
+          >
+            {[
+              "Daily",
+              "Every Other Day",
+              "Twice a Week",
+              "Others, please specify",
+            ].map((option, index) => (
+              <option key={index} value={index + 1}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
 
-      <div className="row mb-3">
-        <div className="input-group mb-3">
-          <span className="input-group-text">Start Date</span>
-          <input
-            type="date"
-            className="form-control"
-            value={formatDateForInput(startDate)}
-            onChange={(e) => onDateChange("start", e)}
-            aria-label="Start Date Input"
-          />
-        </div>
-        <div className="input-group mb-3">
-          <span className="input-group-text" style={{ width: "95px" }}>
-            End Date
-          </span>
-          <input
-            type="date"
-            className="form-control"
-            value={formatDateForInput(endDate)}
-            onChange={(e) => onDateChange("end", e)}
-            aria-label="End Date Input"
-          />
+        {frequency === "4" && (
+          <div style={styles.field}>
+            <label style={styles.label}>
+              Please specify the frequency (Ex. every 3 days)
+            </label>
+            <input
+              type="text"
+              style={styles.input}
+              value={customFrequency}
+              onChange={onCustomFrequencyChange}
+              placeholder="Ex. 3"
+            />
+          </div>
+        )}
+
+        <div style={styles.dateContainer}>
+          <div style={styles.dateField}>
+            <label style={styles.label}>Start Date</label>
+            <input
+              type="date"
+              style={styles.input}
+              value={formatDateForInput(startDate)}
+              onChange={(e) => onDateChange("start", e)}
+            />
+          </div>
+          <div style={styles.dateField}>
+            <label style={styles.label}>End Date</label>
+            <input
+              type="date"
+              style={styles.input}
+              value={formatDateForInput(endDate)}
+              onChange={(e) => onDateChange("end", e)}
+            />
+          </div>
         </div>
       </div>
 
-      <Calendar
-        selectRange={false}
-        tileClassName={({ date }) => {
-          const highlightedDates = getHighlightedDates();
-          return highlightedDates.some(
-            (d) => d.toDateString() === date.toDateString()
-          )
-            ? "highlight"
-            : null;
-        }}
-      />
+      {/* RIGHT HALF */}
+      <div style={styles.rightHalf}>
+        <div style={styles.calendarContainer}>
+          <Calendar
+            selectRange={false}
+            tileClassName={({ date }) => {
+              const highlightedDates = getHighlightedDates();
+              if (date.toDateString() === today.toDateString()) {
+                return "current-day";
+              }
+              return highlightedDates.some(
+                (d) => d.toDateString() === date.toDateString()
+              )
+                ? "highlight"
+                : null;
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
 export default SetDate;
+
+const styles: { [key: string]: React.CSSProperties } = {
+  cardBody: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "24px",
+    width: "100%",
+  },
+  leftHalf: {
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+    gap: "24px",
+  },
+  rightHalf: {
+    width: "50%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  field: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    width: "100%",
+  },
+  label: {
+    fontSize: "16px",
+    fontWeight: "500",
+  },
+  input: {
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    padding: "8px",
+    fontSize: "16px",
+    width: "100%",
+  },
+  select: {
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    padding: "8px",
+    fontSize: "16px",
+    width: "100%",
+  },
+  dateContainer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "16px",
+    width: "100%",
+  },
+  dateField: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    flex: 1,
+  },
+  calendarContainer: {
+    display: "flex",
+    justifyContent: "center",
+  },
+};
