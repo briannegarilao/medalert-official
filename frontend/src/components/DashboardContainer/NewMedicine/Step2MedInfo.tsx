@@ -1,54 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Colors from "../../../theme/Colors";
 
-// TODO: FIX THIS MOTHERFUCKING COMPONENT
-
 function SetTime() {
-  const [specification, setSpecification] = useState(false); // Whether the "Others" input is shown
-  const [count, setCount] = useState(1); // Default count to "Once a Day"
-  const [customCount, setCustomCount] = useState(1); // Custom count for "Others" input
-
-  const amPmOptions = ["AM", "PM"];
+  const [selectedFrequency, setSelectedFrequency] = useState(1); // Track selected frequency
+  const [isCustomFrequency, setIsCustomFrequency] = useState(false); // Track if custom frequency is used
 
   const frequencyOptions = [
     { value: 1, label: "Once a Day" },
     { value: 2, label: "Twice a Day" },
     { value: 3, label: "Three Times a Day" },
     { value: 4, label: "Four Times a Day" },
-    { value: 5, label: "Others, please specify" },
+    { value: 5, label: "Others, please specify" }, // "Others" option with value 5
   ];
 
-  // Handles the change in frequency selection
+  // Handle the frequency selector change
   const handleFrequencyChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const selectedValue = parseInt(event.target.value);
-
-    if (selectedValue === 5) {
-      setSpecification(true); // Show custom count input if "Others, please specify" is selected
-      setCount(0); // Set count to 0, indicating custom input
-    } else {
-      setSpecification(false);
-      setCount(selectedValue); // Use predefined frequency
-    }
+    const value = parseInt(event.target.value);
+    setSelectedFrequency(value);
+    setIsCustomFrequency(value === 5); // Set custom flag only if "Others" is selected
   };
 
-  // Handles the change in custom count input
-  const handleCustomCountChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+  // Handle the "Enter" keypress in the custom frequency input
+  const handleCustomFrequencyKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    const customCountValue = parseInt(event.target.value) || 1; // Default to 1 if no input
-    setCustomCount(customCountValue);
-    setCount(customCountValue); // Set count to custom value for dynamic time inputs
-  };
-
-  // Effect to reset specification state if the frequency is set to "Once a Day"
-  useEffect(() => {
-    if (count === 1) {
-      setSpecification(false); // Hide custom count input if frequency is "Once a Day"
-      setCustomCount(1); // Reset custom count to 1
+    if (event.key === "Enter") {
+      const value = parseInt((event.target as HTMLInputElement).value);
+      if (!isNaN(value) && value > 0) {
+        setSelectedFrequency(value); // Update the selected frequency with the entered value
+        setIsCustomFrequency(true); // Indicate custom frequency is active
+        console.log("Custom frequency entered and set:", value);
+      } else {
+        console.log("Invalid frequency value entered.");
+      }
     }
-  }, [count]);
+  };
 
   return (
     <div style={styles.cardBody}>
@@ -56,15 +44,12 @@ function SetTime() {
       <div style={styles.lefthalf}>
         {/* Frequency Selection */}
         <div style={styles.field}>
-          <label htmlFor="frequency" style={styles.label}>
+          <label style={styles.label}>
             How many times should the medication be taken in a day?
           </label>
           <select
-            className="form-select"
-            id="frequency"
-            name="frequency"
-            value={count === 0 ? 5 : count} // Show custom value if "Others" is selected
-            onChange={handleFrequencyChange}
+            value={isCustomFrequency ? 5 : selectedFrequency} // Show "Others" if custom is active
+            onChange={handleFrequencyChange} // Handle changes
             style={styles.select}
           >
             {frequencyOptions.map((option) => (
@@ -76,51 +61,37 @@ function SetTime() {
         </div>
 
         {/* Custom Frequency Input */}
-        {specification && (
-          <div style={styles.field}>
-            <label htmlFor="customCount" style={styles.label}>
-              Specify the number of times
-            </label>
-            <input
-              type="number"
-              id="customCount"
-              name="customCount"
-              min="1"
-              value={customCount} // Bind to custom count state
-              onChange={handleCustomCountChange}
-              style={styles.input}
-            />
-          </div>
-        )}
+        <div style={styles.field}>
+          <label style={styles.label}>Specify the number of times</label>
+          <input
+            type="number"
+            style={{
+              ...styles.input,
+              opacity: isCustomFrequency ? 1 : 0.5, // 50% transparency when not active
+            }}
+            disabled={!isCustomFrequency} // Disable unless "Others" is selected
+            onKeyDown={handleCustomFrequencyKeyPress} // Attach the keydown handler
+          />
+        </div>
       </div>
 
       {/* RIGHT HALF */}
       <div style={styles.rightHalf}>
-        {/* Dynamic Time Inputs based on selected count */}
-        {[...Array(count)].map((_, index) => (
-          <div key={index} style={styles.field}>
-            <div style={styles.dosageInputContainer}>
+        {/* Scrollable Container for Dynamic Time Inputs */}
+        <div style={styles.scrollableContainer}>
+          {[
+            ...Array(isCustomFrequency ? selectedFrequency : selectedFrequency),
+          ].map((_, index) => (
+            <div key={index} style={styles.field}>
+              <label style={styles.label}>Select Time {index + 1}</label>
               <input
-                type="text"
+                type="time"
                 className="form-control"
-                placeholder="Enter time"
-                aria-label="Time input"
-                style={styles.input}
+                style={styles.timePicker}
               />
-              <select
-                className="form-select"
-                aria-label="AM/PM selector"
-                style={styles.select}
-              >
-                {amPmOptions.map((option) => (
-                  <option key={option} value={option.toLowerCase()}>
-                    {option}
-                  </option>
-                ))}
-              </select>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -130,10 +101,11 @@ export default SetTime;
 
 const styles: { [key: string]: React.CSSProperties } = {
   cardBody: {
+    width: "100%",
+    maxHeight: "100%",
     display: "flex",
     flexDirection: "row",
     gap: "24px",
-    width: "100%",
   },
   lefthalf: {
     display: "flex",
@@ -147,6 +119,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "50%",
     gap: "24px",
   },
+  scrollableContainer: {
+    maxHeight: "400px", // Limit the container height
+    overflowY: "auto", // Enable vertical scrolling
+    paddingRight: "8px", // Add padding for better UX
+    border: `1px solid ${Colors.gray00}`, // Optional border for visual distinction
+    borderRadius: "4px",
+  },
   field: {
     display: "flex",
     flexDirection: "column",
@@ -157,6 +136,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   label: {
     fontSize: "16px",
     fontWeight: "500",
+    textAlign: "left",
   },
   input: {
     border: `1px solid ${Colors.gray00}`,
@@ -166,14 +146,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "8px 16px",
   },
   select: {
+    width: "100%",
     border: `1px solid ${Colors.gray00}`,
     borderRadius: "4px",
     fontSize: "16px",
     padding: "8px",
   },
-  dosageInputContainer: {
-    display: "flex",
-    gap: "8px",
+  timePicker: {
+    border: `1px solid ${Colors.gray00}`,
+    borderRadius: "4px",
+    fontSize: "16px",
     width: "100%",
+    padding: "8px 16px",
   },
 };
