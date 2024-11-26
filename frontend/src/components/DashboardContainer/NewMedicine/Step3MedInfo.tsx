@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // Import default styles for the calendar
+import "./CalendarStyles.css"; // Import custom styles for highlights
 
 function SetDate() {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -8,26 +9,38 @@ function SetDate() {
   const [frequency, setFrequency] = useState<string>("1"); // Default to "Daily"
   const [customFrequency, setCustomFrequency] = useState<string>(""); // For "Others, please specify"
 
+  // Function to handle changes to start or end dates
   const onDateChange = (
     type: "start" | "end",
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const date = new Date(event.target.value); // Convert to Date object
-    if (type === "start") setStartDate(date);
-    if (type === "end") setEndDate(date);
+    const date = new Date(event.target.value);
+    // Validate that the start date is before the end date
+    if (type === "start" && endDate && date > endDate) {
+      alert("Start date cannot be after the end date.");
+      return;
+    }
+    if (type === "end" && startDate && date < startDate) {
+      alert("End date cannot be before the start date.");
+      return;
+    }
+    type === "start" ? setStartDate(date) : setEndDate(date);
   };
 
+  // Function to handle changes in frequency selection
   const onFrequencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFrequency(event.target.value);
   };
 
+  // Function to handle changes in custom frequency input
   const onCustomFrequencyChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setCustomFrequency(event.target.value);
+    const value = event.target.value;
+    if (/^\d*$/.test(value)) setCustomFrequency(value); // Only accept numeric input
   };
 
-  // Function to format the date as YYYY-MM-DD
+  // Function to format dates as YYYY-MM-DD for input fields
   const formatDateForInput = (date: Date | null): string => {
     if (!date) return "";
     const year = date.getFullYear();
@@ -36,46 +49,68 @@ function SetDate() {
     return `${year}-${month}-${day}`;
   };
 
-  // Function to calculate the highlighted dates based on the frequency
-  const getHighlightedDates = () => {
+  // Function to calculate the highlighted dates based on frequency and date range
+  const getHighlightedDates = (): Date[] => {
     if (!startDate || !endDate) return [];
 
     const highlightedDates: Date[] = [];
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const current = new Date(start);
+    let current = new Date(startDate);
 
-    while (current <= end) {
-      if (frequency === "1") {
-        highlightedDates.push(new Date(current));
-      } else if (frequency === "2" && current.getDate() % 2 === 0) {
-        highlightedDates.push(new Date(current));
-      } else if (frequency === "3") {
-        const dayOfWeek = current.getDay();
-        if (dayOfWeek === 1 || dayOfWeek === 4) {
+    switch (frequency) {
+      case "1": // Daily
+        while (current <= endDate) {
           highlightedDates.push(new Date(current));
+          current.setDate(current.getDate() + 1);
         }
-      } else if (frequency === "4" && customFrequency) {
-        const interval = parseInt(customFrequency);
-        if (
-          !isNaN(interval) &&
-          (current.getDate() - start.getDate()) % interval === 0
-        ) {
+        break;
+
+      case "2": // Every Other Day
+        while (current <= endDate) {
           highlightedDates.push(new Date(current));
+          current.setDate(current.getDate() + 2);
         }
-      }
-      current.setDate(current.getDate() + 1);
+        break;
+
+      case "3": // Twice a Week (Monday and Thursday)
+        while (current <= endDate) {
+          if (current.getDay() === 1 || current.getDay() === 4) {
+            highlightedDates.push(new Date(current));
+          }
+          current.setDate(current.getDate() + 1); // Increment by 1 day
+        }
+        break;
+
+      case "4": // Custom Frequency
+        const interval = parseInt(customFrequency, 10);
+        if (!customFrequency || isNaN(interval) || interval <= 0) {
+          // Return an empty array if the custom frequency is invalid
+          return [];
+        }
+        while (current <= endDate) {
+          highlightedDates.push(new Date(current));
+          current.setDate(current.getDate() + interval);
+        }
+        break;
+
+      default:
+        break; // No action for unhandled cases
     }
 
     return highlightedDates;
   };
 
-  // Get today's date for outline styling
+  // Use useMemo to avoid recalculating highlighted dates unnecessarily
+  const highlightedDatesSet = useMemo(
+    () => new Set(getHighlightedDates().map((d) => d.toDateString())),
+    [startDate, endDate, frequency, customFrequency]
+  );
+
+  // Today's date for special styling
   const today = new Date();
 
   return (
     <div style={styles.cardBody}>
-      {/* LEFT HALF */}
+      {/* LEFT HALF - Frequency and Date Inputs */}
       <div style={styles.leftHalf}>
         <div style={styles.field}>
           <label style={styles.label}>
@@ -99,10 +134,11 @@ function SetDate() {
           </select>
         </div>
 
+        {/* Show custom frequency input only for "Others" */}
         {frequency === "4" && (
           <div style={styles.field}>
             <label style={styles.label}>
-              Please specify the frequency (Ex. every 3 days)
+              Please specify the frequency (e.g., every 3 days)
             </label>
             <input
               type="text"
@@ -114,6 +150,7 @@ function SetDate() {
           </div>
         )}
 
+        {/* Date Range Inputs */}
         <div style={styles.dateContainer}>
           <div style={styles.dateField}>
             <label style={styles.label}>Start Date</label>
@@ -136,19 +173,15 @@ function SetDate() {
         </div>
       </div>
 
-      {/* RIGHT HALF */}
+      {/* RIGHT HALF - Calendar */}
       <div style={styles.rightHalf}>
         <div style={styles.calendarContainer}>
           <Calendar
             selectRange={false}
             tileClassName={({ date }) => {
-              const highlightedDates = getHighlightedDates();
-              if (date.toDateString() === today.toDateString()) {
-                return "current-day";
-              }
-              return highlightedDates.some(
-                (d) => d.toDateString() === date.toDateString()
-              )
+              const todayString = today.toDateString();
+              if (date.toDateString() === todayString) return "current-day";
+              return highlightedDatesSet.has(date.toDateString())
                 ? "highlight"
                 : null;
             }}
@@ -161,6 +194,7 @@ function SetDate() {
 
 export default SetDate;
 
+// Inline styles object for component
 const styles: { [key: string]: React.CSSProperties } = {
   cardBody: {
     display: "flex",

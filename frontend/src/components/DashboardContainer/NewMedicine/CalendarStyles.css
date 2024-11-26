@@ -1,0 +1,12 @@
+/* CalendarStyles.css */
+.react-calendar .highlight {
+  background-color: #add8e6; /* Light blue background */
+  color: black; /* Black text for readability */
+  border-radius: 50%; /* Circular shape */
+}
+
+.react-calendar .current-day {
+  background-color: #87ceeb; /* Slightly darker blue for today's date */
+  color: white; /* White text for contrast */
+  border-radius: 50%;
+}
