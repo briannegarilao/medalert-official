@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Colors from "../../../theme/Colors";
 import React from "react";
 
@@ -6,7 +6,7 @@ function SetTime({ medicineData, setMedicineData }: any) {
   // State to manage the selected frequency of medication intake
   // Initialized with the existing medicineData timing frequency
   const [selectedFrequency, setSelectedFrequency] = useState(
-    medicineData.timingFrequency
+    medicineData.timeFrequency
   );
 
   // State to track if a custom frequency is being used
@@ -79,19 +79,11 @@ function SetTime({ medicineData, setMedicineData }: any) {
   };
 
   // Effect to update parent component's state whenever frequency or times change
-  React.useEffect(() => {
+  useEffect(() => {
     setMedicineData({
-      // Spread existing medicine data
       ...medicineData,
-
-      // Update timing frequency
-      timingFrequency: selectedFrequency,
-
-      // Update times per day
+      timeFrequency: selectedFrequency,
       timesPerDay: timesPerDay,
-
-      // Set custom timing frequency if applicable
-      customTimingFrequency: isCustomFrequency ? selectedFrequency : "",
     });
   }, [selectedFrequency, timesPerDay]);
 

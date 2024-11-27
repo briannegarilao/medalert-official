@@ -9,8 +9,8 @@ interface SetDateProps {
   medicineData: {
     startDate: Date | null;
     endDate: Date | null;
-    scheduleFrequency: string;
-    customScheduleFrequency: string;
+    dateFrequency: string;
+    customDateFrequency: string;
   };
   setMedicineData: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -23,10 +23,10 @@ function SetDate({ medicineData, setMedicineData }: SetDateProps) {
   );
   const [endDate, setEndDate] = useState<Date | null>(medicineData.endDate);
   const [frequency, setFrequency] = useState<string>(
-    medicineData.scheduleFrequency
+    medicineData.dateFrequency
   );
   const [customFrequency, setCustomFrequency] = useState<string>(
-    medicineData.customScheduleFrequency
+    medicineData.customDateFrequency
   );
 
   // useEffect hook to update parent component's medicineData
@@ -36,8 +36,8 @@ function SetDate({ medicineData, setMedicineData }: SetDateProps) {
       ...medicineData,
       startDate,
       endDate,
-      scheduleFrequency: frequency,
-      customScheduleFrequency: customFrequency,
+      dateFrequency: frequency,
+      customDateFrequency: customFrequency,
     });
   }, [startDate, endDate, frequency, customFrequency]);
 

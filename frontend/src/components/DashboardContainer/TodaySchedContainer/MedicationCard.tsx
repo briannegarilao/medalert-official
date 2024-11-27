@@ -17,7 +17,10 @@ const MedicationCard: React.FC<MedicationCardProps> = ({
   return (
     // MAIN CARD CONTAINER
     <div style={{ ...styles.card, backgroundColor: backgroundColor }}>
-      {medicationName && <h3 style={styles.heading}>{medicationName}</h3>}
+      <div style={styles.nameTime}>
+        {medicationName && <h3 style={styles.heading}>{medicationName}</h3>}
+        <p>12:30 pm</p>
+      </div>
       {dose && <p style={styles.paragraph}>Dose: {dose}</p>}
       {instruction && (
         <p style={styles.paragraph}>Instruction: {instruction}</p>
@@ -38,6 +41,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     gap: 0,
+  },
+  nameTime: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   heading: {
     fontSize: 20,

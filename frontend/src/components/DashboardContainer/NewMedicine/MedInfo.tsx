@@ -180,7 +180,7 @@ function MedInfo({
             name="specialInstruction"
             value={medicineData.specialInstruction}
             onChange={handleSpecialInstructionChange}
-            placeholder="Ex. take with food"
+            placeholder="Ex. Take after breakfast"
             style={styles.input}
           />
         </div>

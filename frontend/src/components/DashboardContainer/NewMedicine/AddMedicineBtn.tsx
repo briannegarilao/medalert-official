@@ -5,6 +5,12 @@ import SetTime from "./SetTime";
 import SetDate from "./SetDate";
 import colors from "../../../theme/Colors";
 
+// TODO: Make a function to handle the addition of medicine and add its data to firebase
+// TODO: Double check the MedInfo, SetTime, and SetDate components to ensure they are working correctly
+// TODO: Add a confirmation message when the medicine is successfully added (console.log for now)
+// TODO: Add error handling for invalid inputs or missing data in the medicine addition process
+// TODO: Make sure the codes for the steps are consistent. Understand the flow of the steps and make sure they are working correctly.
+
 // TypeScript interface to define the structure and type of medicine data
 // This provides type safety and clear documentation of the expected medicine information
 interface MedicineData {
@@ -15,13 +21,13 @@ interface MedicineData {
   specialInstruction: string; // Any special notes or instructions for the medicine
   selectedColor: string; // Color associated with the medicine (for visual differentiation)
   stock: number; // Number of medicine units currently available
-  timingFrequency: string; // How many times the medicine should be taken per day
-  scheduleFrequency: string; // Frequency of the overall medication schedule
+  timeFrequency: string; // How many times the medicine should be taken per day
+  dateFrequency: string; // Frequency of the overall medication schedule
   timesPerDay: string[]; // Array to store specific times for medication
   startDate: Date | null; // Start date of the medication schedule
   endDate: Date | null; // End date of the medication schedule
-  customTimingFrequency: string; // Custom frequency for timing (if not standard)
-  customScheduleFrequency: string; // Custom frequency for overall schedule
+  customTimeFrequency: string; // Custom frequency for timing (if not standard)
+  customDateFrequency: string; // Custom frequency for overall schedule
 }
 
 function AddMedicineBtn() {
@@ -41,13 +47,13 @@ function AddMedicineBtn() {
     specialInstruction: "", // Optional field for additional instructions
     selectedColor: "", // Color to be chosen by user
     stock: 1, // Default stock set to 1 unit
-    timingFrequency: "1", // Default to once per day
-    scheduleFrequency: "1", // Default to daily schedule
+    timeFrequency: "1", // Default to once per day
+    dateFrequency: "1", // Default to daily schedule
     timesPerDay: [], // Empty array to be populated with specific times
     startDate: null, // No start date initially
     endDate: null, // No end date initially
-    customTimingFrequency: "", // For non-standard timing
-    customScheduleFrequency: "", // For non-standard schedule
+    customTimeFrequency: "", // For non-standard timing
+    customDateFrequency: "", // For non-standard schedule
   });
 
   // CLEAR MEDICINE DATA
@@ -59,13 +65,13 @@ function AddMedicineBtn() {
     specialInstruction: "",
     selectedColor: "",
     stock: 1,
-    timingFrequency: "1",
-    scheduleFrequency: "1",
+    timeFrequency: "1",
+    dateFrequency: "1",
     timesPerDay: [],
     startDate: null,
     endDate: null,
-    customTimingFrequency: "",
-    customScheduleFrequency: "",
+    customTimeFrequency: "",
+    customDateFrequency: "",
   };
 
   // ==================================================================

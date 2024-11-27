@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MealCard from "./MealCard";
+import MedicationCard from "./MedicationCard";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import Colors from "../../../theme/Colors";
@@ -12,32 +12,23 @@ interface Medication {
   backgroundColor: string;
 }
 
-// Meal interface
-interface Meal {
-  meal: string;
-  time: string;
-  medications: Medication[];
-}
-
 const TodaySched: React.FC = () => {
-  const [meals, setMeals] = useState<Meal[]>([]);
+  const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch medications and organize them into meals (Breakfast, Lunch, Dinner)
+  // Fetch medications from Firebase
   const fetchMedications = async () => {
     try {
       const currentUser = "userId_0001"; // Replace with dynamic userId if needed
-      const medicationsPath = `Users/${currentUser}/Medications`;
-
-      // Reference the Medications collection
-      const medicationsCollection = collection(db, medicationsPath);
+      const medicationsCollection = collection(
+        db,
+        `Users/${currentUser}/Medications`
+      );
 
       // Fetch documents in the Medications collection
       const querySnapshot = await getDocs(medicationsCollection);
 
-      const breakfastMedications: Medication[] = [];
-      const lunchMedications: Medication[] = [];
-      const dinnerMedications: Medication[] = [];
+      const fetchedMedications: Medication[] = [];
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -49,52 +40,14 @@ const TodaySched: React.FC = () => {
           backgroundColor: data.color || "white",
         };
 
-        // Process the daysToBeTaken map to get the times
-        const daysToBeTaken = data.daysToBeTaken || {};
-
-        // Iterate over daysToBeTaken and categorize times
-        Object.keys(daysToBeTaken).forEach((day) => {
-          const dayData = daysToBeTaken[day];
-
-          // Check each "takeXX" time field (take01, take02, take03, etc.)
-          Object.keys(dayData).forEach((takeTimeKey) => {
-            const takeTime = dayData[takeTimeKey]; // e.g., "0700", "1300", "1900"
-
-            // Map times to Breakfast, Lunch, or Dinner
-            if (takeTime) {
-              if (takeTime >= "0500" && takeTime < "1000") {
-                breakfastMedications.push(medication);
-              } else if (takeTime >= "1000" && takeTime < "1600") {
-                lunchMedications.push(medication);
-              } else if (takeTime >= "1600" && takeTime < "2000") {
-                dinnerMedications.push(medication);
-              }
-            }
-          });
-        });
+        fetchedMedications.push(medication);
       });
 
-      // Set the meals state
-      setMeals([
-        {
-          meal: "Breakfast",
-          time: "8:00 AM",
-          medications: breakfastMedications,
-        },
-        {
-          meal: "Lunch",
-          time: "12:00 PM",
-          medications: lunchMedications,
-        },
-        {
-          meal: "Dinner",
-          time: "7:00 PM",
-          medications: dinnerMedications,
-        },
-      ]);
+      // Set the medications state
+      setMedications(fetchedMedications);
     } catch (error) {
       console.error("Error fetching medications: ", error);
-      setMeals([]); // Fallback in case of error
+      setMedications([]); // Fallback in case of error
     } finally {
       setLoading(false);
     }
@@ -106,22 +59,17 @@ const TodaySched: React.FC = () => {
 
   return (
     <div style={styles.card}>
-      <h2 style={styles.heading}>Today's Schedule</h2>
+      <h2 style={styles.heading}>Today's Medications</h2>
 
       <div style={styles.medicationCardContainer}>
         {loading ? (
           <p style={styles.paragraph}>LOADING...</p>
-        ) : meals.length > 0 ? (
-          meals.map((meal, index) => (
-            <MealCard
-              key={index}
-              meal={meal.meal}
-              time={meal.time}
-              medications={meal.medications}
-            />
+        ) : medications.length > 0 ? (
+          medications.map((med, index) => (
+            <MedicationCard key={index} {...med} />
           ))
         ) : (
-          <MealCard meal="No Meals" time="No Time" medications={[]} />
+          <p style={styles.paragraph}>No medications scheduled for today.</p>
         )}
       </div>
     </div>
@@ -136,7 +84,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 8,
     border: `1px solid ${Colors.gray00}`,
     boxShadow: `0 4px 8px ${Colors.gray00}`,
-
     flex: 1,
     display: "flex",
     flexDirection: "column",
