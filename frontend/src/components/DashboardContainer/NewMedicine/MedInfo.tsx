@@ -4,49 +4,29 @@ function MedInfo({
   medicineData,
   setMedicineData,
 }: {
-  // TypeScript type definition for component props
-  // 'any' is used here, but it's recommended to replace with a more specific interface
   medicineData: any;
-  // React state setter function type for updating medicine data
   setMedicineData: React.Dispatch<React.SetStateAction<any>>;
 }) {
-  // Handler functions for each input field to update the medicineData state
-
-  // Updates medicine name when user types in the input field
   const handleMedicineNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Spreads existing medicineData and updates medicineName with new value
     setMedicineData({ ...medicineData, medicineName: e.target.value });
   };
-
-  // Updates dosage value when user types in the input field
   const handleDosageValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMedicineData({ ...medicineData, dosageValue: e.target.value });
   };
-
-  // Updates dosage unit when user selects from dropdown
   const handleDosageUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setMedicineData({ ...medicineData, dosageUnit: e.target.value });
   };
-
-  // Updates antibiotic status when user selects radio button
   const handleAntibioticChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMedicineData({ ...medicineData, isAntibiotic: e.target.value });
   };
-
-  // Updates special instructions when user types in the input field
   const handleSpecialInstructionChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setMedicineData({ ...medicineData, specialInstruction: e.target.value });
   };
-
-  // Updates stock quantity when user selects from dropdown
   const handleStockChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // Converts selected value to a number
     setMedicineData({ ...medicineData, stock: Number(e.target.value) });
   };
-
-  // Updates selected color when user clicks on a color option
   const handleColorChange = (color: string) => {
     setMedicineData({ ...medicineData, selectedColor: color });
   };

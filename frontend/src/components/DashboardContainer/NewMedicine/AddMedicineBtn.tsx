@@ -4,6 +4,8 @@ import MedInfo from "./MedInfo";
 import SetTime from "./SetTime";
 import SetDate from "./SetDate";
 import colors from "../../../theme/Colors";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../../../../firebaseConfig";
 
 // TODO: Make a function to handle the addition of medicine and add its data to firebase
 // TODO: Double check the MedInfo, SetTime, and SetDate components to ensure they are working correctly
@@ -100,8 +102,37 @@ function AddMedicineBtn() {
   // ==================================================================
 
   // SET SCHEDULE FUNCTION
-  const setSchedule = () => {
-    setCurrentStep(0);
+  const setSchedule = async () => {
+    // Example user ID - Replace with dynamic ID retrieval logic
+    const userId = "userId_0001";
+
+    // Reference to the Medications collection for this user
+    const medicationsRef = collection(db, `Users/${userId}/Medications`);
+
+    // Prepare the data to match the desired field names in Firestore
+    const medicationDataToSave = {
+      name: medicineData.medicineName,
+      instruction: medicineData.specialInstruction,
+      startDate: medicineData.startDate
+        ? medicineData.startDate.toISOString()
+        : null, // Convert to ISO for timestamp
+      endDate: medicineData.endDate ? medicineData.endDate.toISOString() : null, // Convert to ISO for timestamp
+      type: medicineData.isAntibiotic,
+      color: medicineData.selectedColor,
+      totalStock: medicineData.stock,
+    };
+
+    try {
+      // Add a new document with an auto-generated ID
+      const docRef = await addDoc(medicationsRef, medicationDataToSave);
+      console.log("Medication added with ID:", docRef.id);
+
+      // Reset the form and step
+      setCurrentStep(0);
+      setMedicineData(initialMedicineData);
+    } catch (error) {
+      console.error("Error adding medication:", error);
+    }
   };
 
   // ==================================================================
@@ -130,14 +161,12 @@ function AddMedicineBtn() {
           />
         );
       default:
-        // If no step matches, return null
-        return null;
+        return null; // If no step matches, return null
     }
   };
 
   return (
     <div style={styles.container}>
-      {/* Button to initiate the medicine addition process */}
       {/* Clicking this button sets the current step to 1, opening the modal */}
       <button
         onClick={() => {

@@ -1,48 +1,33 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Colors from "../../../theme/Colors";
 import React from "react";
 
 function SetTime({ medicineData, setMedicineData }: any) {
-  // State to manage the selected frequency of medication intake
-  // Initialized with the existing medicineData timing frequency
   const [selectedFrequency, setSelectedFrequency] = useState(
-    medicineData.timeFrequency
+    medicineData.timingFrequency
   );
 
-  // State to track if a custom frequency is being used
   const [isCustomFrequency, setIsCustomFrequency] = useState(false);
 
-  // State to store the times for medication intake
-  // Initialized with existing timesPerDay from medicineData
   const [timesPerDay, setTimesPerDay] = useState(medicineData.timesPerDay);
 
-  // Predefined frequency options for medication intake
   const frequencyOptions = [
     { value: 1, label: "Once a Day" },
     { value: 2, label: "Twice a Day" },
     { value: 3, label: "Three Times a Day" },
     { value: 4, label: "Four Times a Day" },
-    { value: 5, label: "Others, please specify" }, // Custom option
+    { value: 5, label: "Others, please specify" },
   ];
 
-  // Handler for frequency selection dropdown
   const handleFrequencyChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    // Convert selected value to a number
     const value = parseInt(event.target.value);
-
-    // Update selected frequency
     setSelectedFrequency(value);
-
-    // Set custom frequency flag if "Others" is selected
     setIsCustomFrequency(value === 5);
-
-    // Reset times per day when frequency changes
     setTimesPerDay([]);
   };
 
-  // Handler for custom frequency input
   const handleCustomFrequencyKeyPress = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -79,11 +64,19 @@ function SetTime({ medicineData, setMedicineData }: any) {
   };
 
   // Effect to update parent component's state whenever frequency or times change
-  useEffect(() => {
+  React.useEffect(() => {
     setMedicineData({
+      // Spread existing medicine data
       ...medicineData,
-      timeFrequency: selectedFrequency,
+
+      // Update timing frequency
+      timingFrequency: selectedFrequency,
+
+      // Update times per day
       timesPerDay: timesPerDay,
+
+      // Set custom timing frequency if applicable
+      customTimingFrequency: isCustomFrequency ? selectedFrequency : "",
     });
   }, [selectedFrequency, timesPerDay]);
 
@@ -158,50 +151,46 @@ function SetTime({ medicineData, setMedicineData }: any) {
 
 export default SetTime;
 
-// Styling object with consistent design
 const styles: { [key: string]: React.CSSProperties } = {
-  // Main container with two-column layout
   cardBody: {
     display: "flex",
     flexDirection: "row",
-    gap: "24px", // Space between columns
+    gap: "24px",
   },
-  // Left half styling (frequency selection)
   lefthalf: {
     display: "flex",
     flexDirection: "column",
     width: "50%",
   },
-  // Right half styling (time selection)
   rightHalf: {
     display: "flex",
     flexDirection: "column",
     width: "50%",
   },
-  // Consistent field styling
+  scrollableContainer: {
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: "300px",
+    overflowY: "auto",
+  },
   field: {
     display: "flex",
     flexDirection: "column",
-    gap: "8px", // Space between label and input
+    gap: "8px",
   },
-  // Label styling
   label: {
     fontSize: "16px",
   },
-  // Select dropdown styling
   select: {
     padding: "8px",
   },
-  // Input field styling
   input: {
     padding: "8px",
     borderRadius: "4px",
   },
-  // Time picker styling
   timePicker: {
     padding: "8px",
   },
-  // Navigation button styling (though not used in this component)
   navButton: {
     padding: "10px",
     backgroundColor: Colors.blue01,
