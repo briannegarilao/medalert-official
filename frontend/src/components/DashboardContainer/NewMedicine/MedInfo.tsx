@@ -1,56 +1,104 @@
-import { useState } from "react";
 import Colors from "../../../theme/Colors";
 
-function MedInfo() {
-  const [selectedColor, setSelectedColor] = useState("");
-  const [medicineType, setMedicineType] = useState(""); // State for radio button selection
+function MedInfo({
+  medicineData,
+  setMedicineData,
+}: {
+  // TypeScript type definition for component props
+  // 'any' is used here, but it's recommended to replace with a more specific interface
+  medicineData: any;
+  // React state setter function type for updating medicine data
+  setMedicineData: React.Dispatch<React.SetStateAction<any>>;
+}) {
+  // Handler functions for each input field to update the medicineData state
 
+  // Updates medicine name when user types in the input field
+  const handleMedicineNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Spreads existing medicineData and updates medicineName with new value
+    setMedicineData({ ...medicineData, medicineName: e.target.value });
+  };
+
+  // Updates dosage value when user types in the input field
+  const handleDosageValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMedicineData({ ...medicineData, dosageValue: e.target.value });
+  };
+
+  // Updates dosage unit when user selects from dropdown
+  const handleDosageUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMedicineData({ ...medicineData, dosageUnit: e.target.value });
+  };
+
+  // Updates antibiotic status when user selects radio button
+  const handleAntibioticChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMedicineData({ ...medicineData, isAntibiotic: e.target.value });
+  };
+
+  // Updates special instructions when user types in the input field
+  const handleSpecialInstructionChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setMedicineData({ ...medicineData, specialInstruction: e.target.value });
+  };
+
+  // Updates stock quantity when user selects from dropdown
+  const handleStockChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // Converts selected value to a number
+    setMedicineData({ ...medicineData, stock: Number(e.target.value) });
+  };
+
+  // Updates selected color when user clicks on a color option
   const handleColorChange = (color: string) => {
-    setSelectedColor(color);
+    setMedicineData({ ...medicineData, selectedColor: color });
   };
 
   return (
     <div style={styles.cardBody}>
-      {/* LEFT HALF */}
+      {/* LEFT HALF OF THE FORM */}
       <div style={styles.lefthalf}>
-        {/* Medicine Name */}
+        {/* Medicine Name Input Field */}
         <div style={styles.field}>
           <label style={styles.label}>Medicine Name</label>
           <input
             type="text"
             id="medicineName"
             name="medicineName"
+            // Controlled component - value directly from state
+            value={medicineData.medicineName}
+            // Update handler called on every input change
+            onChange={handleMedicineNameChange}
             placeholder="Ex. Amoxicillin"
             style={styles.input}
           />
         </div>
 
-        {/* Antibiotic or Non-Antibiotic */}
+        {/* Medication Type Selection (Antibiotic or Non-Antibiotic) */}
         <div style={styles.field}>
           <label style={styles.label}>What type of medication is this?</label>
           <div style={styles.radioFieldContainer}>
-            {/* Antibiotic Option */}
+            {/* Antibiotic Radio Button */}
             <label style={styles.radioLabel}>
               <input
                 type="radio"
                 id="antibiotic"
                 name="medicineType"
                 value="antibiotic"
-                checked={medicineType === "antibiotic"}
-                onChange={(e) => setMedicineType(e.target.value)}
+                // Checked state controlled by comparing with current state
+                checked={medicineData.isAntibiotic === "antibiotic"}
+                onChange={handleAntibioticChange}
                 style={styles.radio}
               />
               Antibiotics
             </label>
-            {/* Non-Antibiotic Option */}
+
+            {/* Non-Antibiotic Radio Button */}
             <label style={styles.radioLabel}>
               <input
                 type="radio"
                 id="nonAntibiotic"
                 name="medicineType"
                 value="nonAntibiotic"
-                checked={medicineType === "nonAntibiotic"}
-                onChange={(e) => setMedicineType(e.target.value)}
+                checked={medicineData.isAntibiotic === "nonAntibiotic"}
+                onChange={handleAntibioticChange}
                 style={styles.radio}
               />
               Non-Antibiotic Medication
@@ -58,26 +106,29 @@ function MedInfo() {
           </div>
         </div>
 
-        {/* Choose Color */}
+        {/* Color Selection for Medicine Identification */}
         <div style={styles.field}>
           <label style={styles.label}>
             Choose Color (for easy identification)
           </label>
           <div style={styles.colorContainer}>
+            {/* Dynamically render color options */}
             {["purple", "blue", "green", "pink", "orange", "yellow"].map(
               (color) => (
                 <div
                   key={color}
+                  // Click handler to select color
                   onClick={() => handleColorChange(color)}
                   style={{
                     ...styles.colorShapes,
                     backgroundColor: color,
+                    // Conditional styling for selected color
                     border:
-                      selectedColor === color
+                      medicineData.selectedColor === color
                         ? `2px solid ${Colors.blue01}`
                         : "2px solid #fff",
                     boxShadow:
-                      selectedColor === color
+                      medicineData.selectedColor === color
                         ? `0 0 5px ${Colors.blue01}`
                         : "none",
                   }}
@@ -88,20 +139,30 @@ function MedInfo() {
         </div>
       </div>
 
-      {/* RIGHT HALF */}
+      {/* RIGHT HALF OF THE FORM */}
       <div style={styles.rightHalf}>
-        {/* Dosage */}
+        {/* Dosage Input with Unit Selection */}
         <div style={styles.field}>
           <label style={styles.label}>Dosage</label>
           <div style={styles.dosageInputContainer}>
+            {/* Dosage Value Input */}
             <input
               type="text"
               id="dosage"
               name="dosage"
+              value={medicineData.dosageValue}
+              onChange={handleDosageValueChange}
               placeholder="Ex. 100"
               style={styles.input}
             />
-            <select id="doseUnit" name="doseUnit" style={styles.select}>
+            {/* Dosage Unit Dropdown */}
+            <select
+              id="doseUnit"
+              name="doseUnit"
+              value={medicineData.dosageUnit}
+              onChange={handleDosageUnitChange}
+              style={styles.select}
+            >
               <option value="mg">mg</option>
               <option value="g">g</option>
               <option value="ml">ml</option>
@@ -110,23 +171,33 @@ function MedInfo() {
           </div>
         </div>
 
-        {/* Special Instruction */}
+        {/* Special Instructions Input */}
         <div style={styles.field}>
           <label style={styles.label}>Special Instruction</label>
           <input
             type="text"
             id="specialInstruction"
             name="specialInstruction"
+            value={medicineData.specialInstruction}
+            onChange={handleSpecialInstructionChange}
             placeholder="Ex. take with food"
             style={styles.input}
           />
         </div>
-        {/* Stock */}
+
+        {/* Stock Quantity Selection */}
         <div style={styles.field}>
           <label style={styles.label}>
             How many doses do you currently have left in stock?
           </label>
-          <select id="stock" name="stock" style={styles.select}>
+          <select
+            id="stock"
+            name="stock"
+            value={medicineData.stock}
+            onChange={handleStockChange}
+            style={styles.select}
+          >
+            {/* Dynamically generate options from 1 to 50 */}
             {Array.from({ length: 50 }, (_, index) => (
               <option key={index} value={index + 1}>
                 {index + 1}
@@ -141,37 +212,45 @@ function MedInfo() {
 
 export default MedInfo;
 
+// Styles object with consistent styling across the component
+// Uses flexbox and grid for responsive layout
 const styles: { [key: string]: React.CSSProperties } = {
+  // Main container with two-column layout
   cardBody: {
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    gap: "24px",
+    gap: "24px", // Space between left and right halves
   },
+  // Left half of the form
   lefthalf: {
     display: "flex",
     flexDirection: "column",
     width: "50%",
-    gap: "24px",
+    gap: "24px", // Vertical spacing between fields
   },
+  // Right half of the form
   rightHalf: {
     display: "flex",
     flexDirection: "column",
     width: "50%",
-    gap: "24px",
+    gap: "24px", // Vertical spacing between fields
   },
+  // Consistent field styling
   field: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
-    gap: "8px",
+    gap: "8px", // Space between label and input
     width: "100%",
   },
+  // Label styling
   label: {
     fontSize: "16px",
     textAlign: "left",
     fontWeight: "500",
   },
+  // Input field styling
   input: {
     border: `1px solid ${Colors.gray00}`,
     borderRadius: "4px",
@@ -182,6 +261,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     paddingTop: "8px",
     paddingBottom: "8px",
   },
+  // Radio button container styling
   radioFieldContainer: {
     width: "100%",
     display: "flex",
@@ -189,6 +269,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
+  // Radio button label styling
   radioLabel: {
     flex: 1,
     display: "flex",
@@ -198,16 +279,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "16px",
     textAlign: "left",
   },
+  // Radio button styling
   radio: {
     cursor: "pointer",
     marginRight: "8px",
     marginTop: "6px",
   },
+  // Dosage input container styling
   dosageInputContainer: {
     display: "flex",
     width: "100%",
-    gap: "8px",
+    gap: "8px", // Space between dosage value and unit
   },
+  // Select dropdown styling
   select: {
     border: `1px solid ${Colors.gray00}`,
     borderRadius: "4px",
@@ -217,15 +301,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     paddingTop: "8px",
     paddingBottom: "8px",
   },
+  // Color selection container styling
   colorContainer: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "8px",
+    gridTemplateColumns: "repeat(3, 1fr)", // 3 columns
+    gap: "8px", // Space between color options
   },
+  // Individual color shape styling
   colorShapes: {
     width: "32px",
     height: "32px",
     cursor: "pointer",
-    borderRadius: "50%",
+    borderRadius: "50%", // Circular shape
   },
 };

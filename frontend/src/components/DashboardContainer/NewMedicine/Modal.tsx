@@ -5,16 +5,30 @@ interface ModalProps {
   title: string;
   onClose: () => void;
   children: React.ReactNode;
+  clearData?: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ title, onClose, children }) => {
+const Modal: React.FC<ModalProps> = ({
+  title,
+  onClose,
+  children,
+  clearData,
+}) => {
+  // Handle both clearing data and closing modal
+  const handleClose = () => {
+    if (clearData) {
+      clearData(); // Clear the data first
+    }
+    onClose(); // Then close the modal
+  };
+
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <div style={styles.modalHeader}>
           <h2 style={styles.modalTitle}>{title}</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             type="button"
             className="btn-close"
             aria-label="Close"
