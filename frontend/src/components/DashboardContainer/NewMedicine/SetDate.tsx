@@ -3,6 +3,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // Import default styles for the calendar
 import "./CalendarStyles.css"; // Import custom styles for highlights
 
+// TODO: Make sure everything have data
+
 // TypeScript interface defining the props for the SetDate component
 // This ensures type safety for the component's input parameters
 interface SetDateProps {
@@ -32,12 +34,14 @@ function SetDate({ medicineData, setMedicineData }: SetDateProps) {
   // useEffect hook to update parent component's medicineData
   // whenever local state changes (start date, end date, frequency)
   useEffect(() => {
+    const highlightedDates = getHighlightedDates();
     setMedicineData({
       ...medicineData,
       startDate,
       endDate,
       dateFrequency: frequency,
       customDateFrequency: customFrequency,
+      datesToTake: highlightedDates, // Update `datesToTake` in the parent
     });
   }, [startDate, endDate, frequency, customFrequency]);
 

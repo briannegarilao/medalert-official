@@ -31,71 +31,46 @@ function SetTime({ medicineData, setMedicineData }: any) {
   const handleCustomFrequencyKeyPress = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    // Check if Enter key is pressed
     if (event.key === "Enter") {
-      // Parse the input value
       const value = parseInt((event.target as HTMLInputElement).value);
-
-      // Validate the input
       if (!isNaN(value) && value > 0) {
-        // Set the custom frequency
         setSelectedFrequency(value);
         setIsCustomFrequency(true);
-        console.log("Custom frequency entered and set:", value);
-      } else {
-        console.log("Invalid frequency value entered.");
       }
     }
   };
 
-  // Handler for time selection changes
   const handleTimeChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    // Create a copy of existing times
     const updatedTimes = [...timesPerDay];
-
-    // Update the time at the specific index
-    updatedTimes[index] = event.target.value;
-
-    // Update the state with new times
+    const timeValue = event.target.value;
+    updatedTimes[index] = `${timeValue}:00`;
     setTimesPerDay(updatedTimes);
   };
 
-  // Effect to update parent component's state whenever frequency or times change
   React.useEffect(() => {
     setMedicineData({
-      // Spread existing medicine data
       ...medicineData,
-
-      // Update timing frequency
       timingFrequency: selectedFrequency,
-
-      // Update times per day
       timesPerDay: timesPerDay,
-
-      // Set custom timing frequency if applicable
       customTimingFrequency: isCustomFrequency ? selectedFrequency : "",
     });
   }, [selectedFrequency, timesPerDay]);
 
   return (
     <div style={styles.cardBody}>
-      {/* LEFT HALF: Frequency Selection */}
       <div style={styles.lefthalf}>
-        {/* Frequency Dropdown */}
         <div style={styles.field}>
           <label style={styles.label}>
             How many times should the medication be taken in a day?
           </label>
           <select
-            // Use 5 (custom option) if it's a custom frequency
             value={isCustomFrequency ? 5 : selectedFrequency}
             onChange={handleFrequencyChange}
             style={styles.select}
           >
-            {/* Dynamically render frequency options */}
             {frequencyOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -104,30 +79,23 @@ function SetTime({ medicineData, setMedicineData }: any) {
           </select>
         </div>
 
-        {/* Custom Frequency Input */}
         <div style={styles.field}>
           <label style={styles.label}>Specify the number of times</label>
           <input
             type="number"
             style={{
-              // Adjust opacity based on custom frequency selection
               ...styles.input,
               opacity: isCustomFrequency ? 1 : 0.5,
             }}
-            // Disable input if not in custom mode
             disabled={!isCustomFrequency}
-            // Handle custom frequency input
             onKeyDown={handleCustomFrequencyKeyPress}
           />
         </div>
       </div>
 
-      {/* RIGHT HALF: Time Selection */}
       <div style={styles.rightHalf}>
         <div style={styles.scrollableContainer}>
-          {/* Dynamically generate time inputs based on frequency */}
           {[
-            // Create an array with length equal to selected frequency
             ...Array(isCustomFrequency ? selectedFrequency : selectedFrequency),
           ].map((_, index) => (
             <div key={index} style={styles.field}>
@@ -136,9 +104,7 @@ function SetTime({ medicineData, setMedicineData }: any) {
                 type="time"
                 className="form-control"
                 style={styles.timePicker}
-                // Use existing time if available, otherwise empty string
                 value={timesPerDay[index] || ""}
-                // Handle time change for each input
                 onChange={(event) => handleTimeChange(index, event)}
               />
             </div>

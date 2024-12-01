@@ -3,27 +3,35 @@ import Colors from "../../../theme/Colors";
 
 interface MedicationCardProps {
   medicationName?: string;
-  dose?: string;
-  instruction?: string;
+  dosageValue?: string;
+  dosageUnit?: string;
+  specialInstruction?: string;
   backgroundColor?: string;
+  time?: string; // New prop for the specific time
 }
 
 const MedicationCard: React.FC<MedicationCardProps> = ({
-  medicationName = "No Medication",
-  dose = "no dosage available",
-  instruction = "no instruction available",
+  medicationName = "No Name",
+  dosageValue = "No Dose",
+  dosageUnit = "No Unit",
+  specialInstruction = "No Instructions",
   backgroundColor = Colors.blue00,
+  time = "No Time", // Default to handle undefined
 }) => {
   return (
     // MAIN CARD CONTAINER
     <div style={{ ...styles.card, backgroundColor: backgroundColor }}>
       <div style={styles.nameTime}>
         {medicationName && <h3 style={styles.heading}>{medicationName}</h3>}
-        <p>12:30 pm</p>
+        <p>{time}</p>
       </div>
-      {dose && <p style={styles.paragraph}>Dose: {dose}</p>}
-      {instruction && (
-        <p style={styles.paragraph}>Instruction: {instruction}</p>
+      {dosageValue && dosageUnit && (
+        <p style={styles.paragraph}>
+          Dose: {dosageValue} {dosageUnit}
+        </p>
+      )}
+      {specialInstruction && (
+        <p style={styles.paragraph}>Instruction: {specialInstruction}</p>
       )}
     </div>
   );
