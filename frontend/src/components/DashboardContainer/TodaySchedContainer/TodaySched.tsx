@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import MedicationCard from "./MedicationCard";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
+
+import MedicationCard from "./MedicationCard";
 import Colors from "../../../theme/Colors";
 
 // Medication interface
@@ -19,15 +20,13 @@ const TodaySched: React.FC = () => {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch medications from Firebase using onSnapshot
   const fetchMedications = () => {
-    const currentUser = "userId_0001"; // Replace with dynamic userId if needed
+    const currentUser = "userId_0001";
     const medicationsCollection = collection(
       db,
       `Users/${currentUser}/Medications`
     );
 
-    // Listen for real-time changes
     onSnapshot(medicationsCollection, (querySnapshot) => {
       const fetchedMedications: Medication[] = [];
 
@@ -48,7 +47,6 @@ const TodaySched: React.FC = () => {
       });
 
       setMedications(fetchedMedications);
-      console.log("Fetched Medications:", fetchedMedications);
       setLoading(false);
     });
   };
@@ -60,7 +58,6 @@ const TodaySched: React.FC = () => {
     return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   };
 
-  // Filter medications for today
   const getTodaysMedications = () => {
     const today = new Date();
     const todayMedications: { medication: Medication; time: string }[] = [];
@@ -122,10 +119,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     overflowY: "hidden",
+    gap: 8,
   },
   medicationCardContainer: {
     width: "100%",
     height: "100%",
+    borderRadius: 8,
     display: "flex",
     flexDirection: "column",
     gap: 16,

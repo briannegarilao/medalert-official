@@ -31,6 +31,16 @@ function MedInfo({
     setMedicineData({ ...medicineData, selectedColor: color });
   };
 
+  // Define your custom color array with hex values
+  const colorOptions = [
+    "#6A5EEE", // Slate Blue
+    "#279DDA", // Dodger Blue
+    "#019966", // Dark Green
+    "#D8428C", // Orchid
+    "#D96326", // Burnt Orange
+    "#F1B401", // Amber
+  ];
+
   return (
     <div style={styles.cardBody}>
       {/* LEFT HALF OF THE FORM */}
@@ -42,9 +52,7 @@ function MedInfo({
             type="text"
             id="medicineName"
             name="medicineName"
-            // Controlled component - value directly from state
             value={medicineData.medicineName}
-            // Update handler called on every input change
             onChange={handleMedicineNameChange}
             placeholder="Ex. Amoxicillin"
             style={styles.input}
@@ -62,7 +70,6 @@ function MedInfo({
                 id="antibiotic"
                 name="medicineType"
                 value="antibiotic"
-                // Checked state controlled by comparing with current state
                 checked={medicineData.isAntibiotic === "antibiotic"}
                 onChange={handleAntibioticChange}
                 style={styles.radio}
@@ -93,28 +100,24 @@ function MedInfo({
           </label>
           <div style={styles.colorContainer}>
             {/* Dynamically render color options */}
-            {["purple", "blue", "green", "pink", "orange", "yellow"].map(
-              (color) => (
-                <div
-                  key={color}
-                  // Click handler to select color
-                  onClick={() => handleColorChange(color)}
-                  style={{
-                    ...styles.colorShapes,
-                    backgroundColor: color,
-                    // Conditional styling for selected color
-                    border:
-                      medicineData.selectedColor === color
-                        ? `2px solid ${Colors.blue01}`
-                        : "2px solid #fff",
-                    boxShadow:
-                      medicineData.selectedColor === color
-                        ? `0 0 5px ${Colors.blue01}`
-                        : "none",
-                  }}
-                ></div>
-              )
-            )}
+            {colorOptions.map((color) => (
+              <div
+                key={color}
+                onClick={() => handleColorChange(color)}
+                style={{
+                  ...styles.colorShapes,
+                  backgroundColor: color,
+                  border:
+                    medicineData.selectedColor === color
+                      ? `2px solid ${Colors.blue01}`
+                      : "2px solid #fff",
+                  boxShadow:
+                    medicineData.selectedColor === color
+                      ? `0 0 5px ${Colors.blue01}`
+                      : "none",
+                }}
+              ></div>
+            ))}
           </div>
         </div>
       </div>
@@ -193,7 +196,6 @@ function MedInfo({
 export default MedInfo;
 
 // Styles object with consistent styling across the component
-// Uses flexbox and grid for responsive layout
 const styles: { [key: string]: React.CSSProperties } = {
   // Main container with two-column layout
   cardBody: {
@@ -280,18 +282,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     paddingRight: "8px",
     paddingTop: "8px",
     paddingBottom: "8px",
+    width: "auto",
   },
-  // Color selection container styling
+  // Color container for clickable color options
   colorContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)", // 3 columns
-    gap: "8px", // Space between color options
+    display: "flex",
+    gap: "12px", // Space between each color option
+    justifyContent: "flex-start",
+    marginTop: "8px",
   },
-  // Individual color shape styling
+  // Color circle styling
   colorShapes: {
-    width: "32px",
-    height: "32px",
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
     cursor: "pointer",
-    borderRadius: "50%", // Circular shape
+    transition: "box-shadow 0.3s ease, border 0.3s ease",
   },
 };

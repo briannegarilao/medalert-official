@@ -1,4 +1,3 @@
-// Import the ChangeEvent type for typing the onChange event handler
 import { ChangeEvent } from "react";
 
 // Define the props interface for the MonthSelect component

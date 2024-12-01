@@ -7,7 +7,7 @@ interface MedicationCardProps {
   dosageUnit?: string;
   specialInstruction?: string;
   backgroundColor?: string;
-  time?: string; // New prop for the specific time
+  time?: string;
 }
 
 const MedicationCard: React.FC<MedicationCardProps> = ({
@@ -16,10 +16,9 @@ const MedicationCard: React.FC<MedicationCardProps> = ({
   dosageUnit = "No Unit",
   specialInstruction = "No Instructions",
   backgroundColor = Colors.blue00,
-  time = "No Time", // Default to handle undefined
+  time = "No Time",
 }) => {
   return (
-    // MAIN CARD CONTAINER
     <div style={{ ...styles.card, backgroundColor: backgroundColor }}>
       <div style={styles.nameTime}>
         {medicationName && <h3 style={styles.heading}>{medicationName}</h3>}
