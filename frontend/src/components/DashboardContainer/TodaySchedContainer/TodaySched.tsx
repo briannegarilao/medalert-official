@@ -113,19 +113,23 @@ export default TodaySched;
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
+    width: "100%",
+    height: "100%",
     padding: "1rem",
     borderRadius: 8,
     border: `1px solid ${Colors.gray00}`,
     boxShadow: `0 4px 8px ${Colors.gray00}`,
-    flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: 24,
+    overflowY: "hidden",
   },
   medicationCardContainer: {
+    width: "100%",
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     gap: 16,
+    overflowY: "auto",
   },
   heading: {
     fontSize: 24,

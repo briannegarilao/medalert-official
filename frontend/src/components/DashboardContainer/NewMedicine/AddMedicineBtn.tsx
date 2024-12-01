@@ -136,7 +136,7 @@ function AddMedicineBtn() {
   };
 
   return (
-    <div style={styles.container}>
+    <>
       <button
         onClick={() => {
           setCurrentStep(1);
@@ -184,18 +184,15 @@ function AddMedicineBtn() {
           </div>
         </Modal>
       )}
-    </div>
+    </>
   );
 }
 
 export default AddMedicineBtn;
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "2px",
-    textAlign: "center",
-  },
   primaryButton: {
+    width: "100%",
     padding: "10px 24px",
     backgroundColor: colors.blue01,
     color: colors.white00,

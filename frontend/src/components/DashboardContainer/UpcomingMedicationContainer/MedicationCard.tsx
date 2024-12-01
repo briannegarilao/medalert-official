@@ -1,7 +1,6 @@
-// Define the props interface for the MedicationCard component
 interface MedicationCardProps {
-  medicationName: string; // Name of the medication (e.g., "Aspirin")
-  time: string; // Scheduled time for taking the medication (e.g., "8:00 AM")
+  medicationName: string;
+  time: string;
   dose: string; // Dosage information (e.g., "500mg")
   instruction: string; // Additional instructions for the medication (e.g., "Take after food")
   borderColor: string; // Color for the left border of the card (used for styling)
