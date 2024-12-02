@@ -6,7 +6,7 @@ interface StockCardProps {
   currentStock: number;
 }
 
-const StockCard: React.FC<StockCardProps> = ({
+const MissedCard: React.FC<StockCardProps> = ({
   medicationName = "No Name",
   currentStock = 0,
 }) => {
@@ -21,7 +21,7 @@ const StockCard: React.FC<StockCardProps> = ({
   );
 };
 
-export default StockCard;
+export default MissedCard;
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {

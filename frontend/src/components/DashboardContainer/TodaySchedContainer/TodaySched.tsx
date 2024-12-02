@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
-
 import MedicationCard from "./MedicationCard";
 import Colors from "../../../theme/Colors";
 
-// Medication interface
 interface Medication {
+  id?: string;
   medicationName?: string;
   dosageValue?: string;
   dosageUnit?: string;
@@ -14,6 +13,7 @@ interface Medication {
   timesPerDay?: string[];
   datesToTake?: string[];
   backgroundColor?: string;
+  notifications?: { date: string; time: string; isTaken: boolean }[];
 }
 
 const TodaySched: React.FC = () => {
@@ -34,6 +34,7 @@ const TodaySched: React.FC = () => {
         const data = doc.data();
 
         const medication: Medication = {
+          id: doc.id,
           medicationName: data.medicineName,
           dosageValue: data.dosageValue,
           dosageUnit: data.dosageUnit,
@@ -41,6 +42,7 @@ const TodaySched: React.FC = () => {
           timesPerDay: data.timesPerDay,
           datesToTake: data.datesToTake,
           backgroundColor: data.selectedColor,
+          notifications: data.notifications,
         };
 
         fetchedMedications.push(medication);
@@ -51,37 +53,61 @@ const TodaySched: React.FC = () => {
     });
   };
 
-  const formatTime = (timeString: string): string => {
-    const [hour, minute] = timeString.split(":").map(Number);
-    const date = new Date();
-    date.setHours(hour, minute);
-    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  };
+  const handleCheckboxChange = (medicationName: string, time: string) => {
+    const matchingMedication = medications.find(
+      (med) =>
+        med.medicationName === medicationName && med.timesPerDay?.includes(time)
+    );
 
-  const getTodaysMedications = () => {
-    const today = new Date();
-    const todayMedications: { medication: Medication; time: string }[] = [];
+    if (matchingMedication) {
+      const today = new Date().toLocaleDateString("en-CA"); // Format date as YYYY-MM-DD
+      console.log(`Checkbox toggled for:`);
+      console.log(`Medication: ${medicationName}`);
+      console.log(`Date: ${today}`);
+      console.log(`Time: ${time}`);
+      console.log(`Document ID: ${matchingMedication.id}`);
 
-    medications.forEach((med) => {
-      if (
-        med.datesToTake?.some(
-          (date) => new Date(date).toDateString() === today.toDateString()
-        )
-      ) {
-        med.timesPerDay?.forEach((time) => {
-          todayMedications.push({ medication: med, time: formatTime(time) });
-        });
+      const notifications = matchingMedication.notifications || [];
+      const matchingIndex = notifications.findIndex(
+        (notif) => notif.date === today && notif.time === time
+      );
+
+      if (matchingIndex !== -1) {
+        console.log(`Matching Notification Index: ${matchingIndex}`);
+        console.log("Notification Details:", notifications[matchingIndex]);
+        return matchingIndex;
+      } else {
+        console.log("No matching notification found in the array.");
+        return null;
       }
-    });
-
-    return todayMedications;
+    } else {
+      console.log("No matching medication found for the checkbox interaction.");
+      return null;
+    }
   };
 
   useEffect(() => {
     fetchMedications();
   }, []);
 
-  const todaysMedications = getTodaysMedications();
+  const todaysMedications = medications.map((med) => ({
+    ...med,
+    timesPerDay: med.timesPerDay?.map((time) => {
+      const today = new Date().toLocaleDateString("en-CA");
+      const notification = med.notifications?.find(
+        (notif) => notif.date === today && notif.time === time
+      );
+
+      return {
+        time,
+        formattedTime: new Date(`1970-01-01T${time}`).toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+        }),
+        isTaken: notification?.isTaken || false, // Pass the isTaken status
+      };
+    }),
+  }));
 
   return (
     <div style={styles.card}>
@@ -91,13 +117,21 @@ const TodaySched: React.FC = () => {
         {loading ? (
           <p style={styles.paragraph}>LOADING...</p>
         ) : todaysMedications.length > 0 ? (
-          todaysMedications.map((med, index) => (
-            <MedicationCard
-              key={index}
-              {...med.medication}
-              time={med.time} // Pass the specific time
-            />
-          ))
+          todaysMedications.map((med, index) =>
+            med.timesPerDay?.map(({ time, formattedTime, isTaken }) => (
+              <MedicationCard
+                key={`${index}-${time}`}
+                medicationName={med.medicationName}
+                dosageValue={med.dosageValue}
+                dosageUnit={med.dosageUnit}
+                specialInstruction={med.specialInstruction}
+                backgroundColor={med.backgroundColor}
+                time={formattedTime}
+                isTaken={isTaken} // Pass isTaken to the card
+                onCheckboxChange={(name) => handleCheckboxChange(name, time)}
+              />
+            ))
+          )
         ) : (
           <p style={styles.paragraph}>No medications scheduled for today.</p>
         )}

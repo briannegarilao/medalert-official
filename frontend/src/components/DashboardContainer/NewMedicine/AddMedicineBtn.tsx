@@ -76,6 +76,18 @@ function AddMedicineBtn() {
     const userId = "userId_0001";
     const medicationsRef = collection(db, `Users/${userId}/Medications`);
 
+    // Generate notifications based on datesToTake and timesPerDay
+    const notifications = medicineData.datesToTake.flatMap((date) =>
+      medicineData.timesPerDay.map((time) => ({
+        date: date.toISOString().split("T")[0], // Format the date
+        time: time,
+        isTaken: false,
+        isLate: false,
+        lateCount: 0,
+        isMissed: false,
+      }))
+    );
+
     const medicationDataToSave = {
       medicineName: medicineData.medicineName,
       dosageValue: medicineData.dosageValue,
@@ -86,11 +98,16 @@ function AddMedicineBtn() {
       totalStock: medicineData.stock,
       currentStock: medicineData.stock,
       startDate: medicineData.startDate
-        ? medicineData.startDate.toISOString()
+        ? medicineData.startDate.toISOString().split("T")[0] // Format the date
         : null,
-      endDate: medicineData.endDate ? medicineData.endDate.toISOString() : null,
-      datesToTake: medicineData.datesToTake.map((date) => date.toISOString()),
+      endDate: medicineData.endDate
+        ? medicineData.endDate.toISOString().split("T")[0] // Format the date
+        : null,
+      datesToTake: medicineData.datesToTake.map(
+        (date) => date.toISOString().split("T")[0]
+      ), // Format each date
       timesPerDay: medicineData.timesPerDay, // Already in ISO Time Format
+      notifications,
     };
 
     try {
@@ -144,7 +161,7 @@ function AddMedicineBtn() {
         }}
         style={styles.primaryButton}
       >
-        Add Medicine
+        ADD MEDICINE
       </button>
 
       {currentStep > 0 && (
@@ -199,7 +216,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
     borderRadius: "8px",
     cursor: "pointer",
-    fontSize: "16px",
+    fontSize: "24px",
+    fontWeight: "bold",
   },
   navigationButtons: {
     display: "flex",

@@ -7,8 +7,12 @@ const Colors = {
   green00: "#B7DF69",
   green01: "#44710C",
 
+  red00: "#D62828",
+
   gray00: "#d2d2d2",
   gray99: "#333333",
+
+  notifBlue00: "#83B0E1",
 };
 
 export default Colors;

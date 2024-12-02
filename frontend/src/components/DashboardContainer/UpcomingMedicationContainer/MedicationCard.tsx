@@ -44,7 +44,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: 14,
     display: "flex",
     flexDirection: "column",
-    borderLeft: `8px solid ${Colors.green01}`,
+    borderLeft: `16px solid ${Colors.green01}`,
   },
   nameTime: {
     display: "flex",

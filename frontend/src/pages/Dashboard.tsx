@@ -7,10 +7,15 @@ import Profile from "../components/DashboardContainer/ProfileContainer/Profile";
 import UpMedSched from "../components/DashboardContainer/UpcomingMedicationContainer/UpMedSched";
 import TodaySched from "../components/DashboardContainer/TodaySchedContainer/TodaySched";
 import Colors from "../theme/Colors";
+import Notifications from "../components/Notification/Notifications";
 
 function Dashboard() {
   return (
     <div style={styles.mainContainer}>
+      <div style={styles.notificationCard}>
+        <Notifications />
+      </div>
+
       <div>
         <Sidebar />
       </div>
@@ -25,15 +30,9 @@ function Dashboard() {
           <UpMedSched />
         </div>
         <div style={styles.profileAndOthers}>
-          <div>
-            <Profile />
-          </div>
-          <div>
-            <Stock />
-          </div>
-          <div>
-            <MissedDoses />
-          </div>
+          <Profile />
+          <MissedDoses />
+          <Stock />
         </div>
       </div>
     </div>
@@ -63,9 +62,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: 24,
     padding: 24,
   },
-
   addMedAndTodaySched: {
-    width: "100%",
+    width: "33.33%",
     height: "100%",
     display: "flex",
     flexDirection: "column",
@@ -73,18 +71,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: 24,
   },
   upMedSched: {
-    width: "100%",
+    width: "33.33%",
     height: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   profileAndOthers: {
-    width: "100%",
+    width: "33.33%",
     height: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     gap: 24,
+  },
+  notificationCard: {
+    position: "absolute",
+    top: 24,
+    right: 24,
   },
 };
