@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import MedicationCard from "./MedicationCard";
 import Colors from "../../../theme/Colors";
@@ -53,7 +53,7 @@ const TodaySched: React.FC = () => {
     });
   };
 
-  const handleCheckboxChange = (medicationName: string, time: string) => {
+  const handleCheckboxChange = async (medicationName: string, time: string) => {
     const matchingMedication = medications.find(
       (med) =>
         med.medicationName === medicationName && med.timesPerDay?.includes(time)
@@ -74,15 +74,57 @@ const TodaySched: React.FC = () => {
 
       if (matchingIndex !== -1) {
         console.log(`Matching Notification Index: ${matchingIndex}`);
-        console.log("Notification Details:", notifications[matchingIndex]);
-        return matchingIndex;
+        console.log(
+          "Notification Details Before Update:",
+          notifications[matchingIndex]
+        );
+
+        // Toggle isTaken field
+        notifications[matchingIndex].isTaken =
+          !notifications[matchingIndex].isTaken;
+
+        // Log the updated notification details
+        console.log(
+          "Notification Details After Update:",
+          notifications[matchingIndex]
+        );
+
+        // Update Firestore document
+        try {
+          if (matchingMedication.id) {
+            const medicationDocRef = doc(
+              db,
+              `Users/userId_0001/Medications`,
+              matchingMedication.id
+            );
+
+            await updateDoc(medicationDocRef, {
+              notifications: notifications,
+            });
+
+            console.log(
+              `Firestore updated successfully for medication ${medicationName}`
+            );
+          } else {
+            console.error("Medication ID is undefined.");
+          }
+        } catch (error) {
+          console.error("Error updating Firestore:", error);
+        }
+
+        // Update the state with the modified notifications array
+        setMedications((prevMedications) =>
+          prevMedications.map((med) =>
+            med.id === matchingMedication.id
+              ? { ...med, notifications: [...notifications] }
+              : med
+          )
+        );
       } else {
         console.log("No matching notification found in the array.");
-        return null;
       }
     } else {
       console.log("No matching medication found for the checkbox interaction.");
-      return null;
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
 import Colors from "../../../theme/Colors";
 
@@ -27,11 +27,21 @@ const MedicationCard: React.FC<MedicationCardProps> = ({
   isTaken = false, // Default to false
   onCheckboxChange,
 }) => {
-  const [isChecked, setIsChecked] = useState(isTaken); // Initialize with isTaken
+  const [isChecked, setIsChecked] = useState(isTaken);
+
+  useEffect(() => {
+    setIsChecked(isTaken); // Sync state with isTaken prop
+  }, [isTaken]);
 
   const handleCheckboxChange = () => {
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState);
+
+    console.log(
+      `${medicationName} at ${time} checkbox ${
+        newCheckedState ? "highlighted" : "unhighlighted"
+      }`
+    );
 
     if (onCheckboxChange && medicationName && time) {
       onCheckboxChange(medicationName, time, newCheckedState);
