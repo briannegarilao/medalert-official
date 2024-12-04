@@ -5,16 +5,28 @@ import MissedCard from "./MissedCard";
 import Colors from "../../../theme/Colors";
 
 interface Medication {
-  medicationName: string;
-  currentStock: number;
+  medicineName: string;
+  notifications: {
+    date: string;
+    time: string;
+    isLate: boolean;
+    isTaken: boolean;
+    lateCount: number;
+  }[];
 }
 
 function Stock() {
-  const [medications, setMedications] = useState<Medication[]>([]);
+  const [missedMedications, setMissedMedications] = useState<
+    {
+      medicineName: string;
+      missedTime: string;
+      lateBy: string;
+      isSevereLate: boolean;
+    }[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch medications from Firestore
-  const fetchMedications = () => {
+  const fetchMissedMedications = () => {
     const currentUser = "userId_0001"; // Adjust this with actual user ID logic
     const medicationsCollection = collection(
       db,
@@ -22,24 +34,70 @@ function Stock() {
     );
 
     onSnapshot(medicationsCollection, (querySnapshot) => {
-      const fetchedMedications: Medication[] = [];
+      const fetchedMissed: {
+        medicineName: string;
+        missedTime: string;
+        lateBy: string;
+        isSevereLate: boolean;
+      }[] = [];
 
       querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const medication: Medication = {
-          medicationName: data.medicineName,
-          currentStock: data.currentStock,
-        };
-        fetchedMedications.push(medication);
+        const data = doc.data() as Medication;
+
+        if (data.notifications) {
+          data.notifications.forEach((notif) => {
+            if (notif.isLate && !notif.isTaken) {
+              // Format the time to "6:00 AM"
+              const [hours, minutes] = notif.time.split(":").map(Number);
+              const timeObject = new Date();
+              timeObject.setHours(hours, minutes, 0);
+
+              const formattedTime = timeObject.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              });
+
+              // Calculate how late it is
+              const notificationTime = new Date();
+              notificationTime.setHours(hours, minutes, 0);
+
+              const now = new Date();
+              const lateDuration = now.getTime() - notificationTime.getTime();
+
+              // Convert lateDuration to hours and minutes
+              const lateHours = Math.floor(lateDuration / (1000 * 60 * 60));
+              const lateMinutes = Math.floor(
+                (lateDuration % (1000 * 60 * 60)) / (1000 * 60)
+              );
+
+              const lateBy =
+                lateHours > 0
+                  ? `${lateHours} hr${lateHours > 1 ? "s" : ""}${
+                      lateMinutes > 0 ? `, ${lateMinutes} min` : ""
+                    }`
+                  : `${lateMinutes} min`;
+
+              const isSevereLate = lateMinutes > 15 || lateHours > 0;
+
+              fetchedMissed.push({
+                medicineName: data.medicineName,
+                missedTime: formattedTime,
+                lateBy,
+                isSevereLate,
+              });
+            }
+          });
+        }
       });
 
-      setMedications(fetchedMedications);
+      setMissedMedications(fetchedMissed);
       setLoading(false);
     });
   };
 
   useEffect(() => {
-    fetchMedications();
+    fetchMissedMedications();
   }, []);
 
   return (
@@ -49,12 +107,18 @@ function Stock() {
       <div style={styles.medicationCardContainer}>
         {loading ? (
           <p style={styles.paragraph}>LOADING...</p>
-        ) : medications.length > 0 ? (
-          medications.map((med, index) => (
-            <MissedCard key={index} medicationName={""} currentStock={0} />
+        ) : missedMedications.length > 0 ? (
+          missedMedications.map((med, index) => (
+            <MissedCard
+              key={index}
+              medicationName={med.medicineName}
+              missedTime={med.missedTime}
+              lateBy={med.lateBy}
+              isSevereLate={med.isSevereLate}
+            />
           ))
         ) : (
-          <p style={styles.paragraph}>No medications scheduled for today.</p>
+          <p style={styles.paragraph}>No missed medications.</p>
         )}
       </div>
     </div>
@@ -91,15 +155,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     gap: 16,
     overflowY: "auto",
-  },
-  checkStatsBtn: {
-    width: "100%",
-    padding: "10px 24px",
-    backgroundColor: Colors.blue01,
-    color: Colors.white00,
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "16px",
   },
 };

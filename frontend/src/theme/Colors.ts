@@ -13,6 +13,9 @@ const Colors = {
   gray99: "#333333",
 
   notifBlue00: "#83B0E1",
+
+  warningOrage00: "#FFA500",
+  warningRed00: "#FF0000",
 };
 
 export default Colors;

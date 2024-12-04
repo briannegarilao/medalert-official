@@ -1,22 +1,33 @@
 import React from "react";
-import Colors from "../../../theme/Colors"; // Make sure Colors is imported
+import Colors from "../../../theme/Colors";
 
-interface StockCardProps {
+interface MissedCardProps {
   medicationName: string;
-  currentStock: number;
+  missedTime: string;
+  lateBy: string;
+  isSevereLate: boolean;
 }
 
-const MissedCard: React.FC<StockCardProps> = ({
-  medicationName = "No Name",
-  currentStock = 0,
+const MissedCard: React.FC<MissedCardProps> = ({
+  medicationName,
+  missedTime,
+  lateBy,
+  isSevereLate,
 }) => {
-  // Dynamically determine the background color based on currentStock
-  const cardBackgroundColor = currentStock < 1 ? Colors.red00 : Colors.green00;
-
   return (
-    <div style={{ ...styles.card, backgroundColor: cardBackgroundColor }}>
-      <h3 style={styles.heading}>{medicationName}</h3>
-      <p style={styles.paragraph}>Current Stock: {currentStock}</p>
+    <div
+      style={{
+        ...styles.card,
+        backgroundColor: isSevereLate
+          ? Colors.warningRed00
+          : Colors.warningOrage00,
+      }}
+    >
+      <div style={styles.header}>
+        <h3 style={styles.heading}>{medicationName}</h3>
+        <p style={styles.paragraph}>{missedTime}</p>
+      </div>
+      <p style={styles.paragraph}>Late by: {lateBy}</p>
     </div>
   );
 };
@@ -25,6 +36,7 @@ export default MissedCard;
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
+    width: "100%",
     padding: "1rem",
     borderRadius: 8,
     color: "white",
@@ -33,9 +45,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     gap: 0,
   },
+  header: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+  },
   heading: {
     fontSize: 20,
     marginBottom: 8,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "100%",
   },
   paragraph: {
     marginBottom: 0,
