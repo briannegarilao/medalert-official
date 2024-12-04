@@ -1,21 +1,25 @@
-import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import MissedCard from "./MissedCard";
 import Colors from "../../../theme/Colors";
 
-interface Medication {
-  medicineName: string;
-  notifications: {
-    date: string;
-    time: string;
-    isLate: boolean;
-    isTaken: boolean;
-    lateCount: number;
-  }[];
+interface Notification {
+  date: string;
+  time: string;
+  isLate: boolean;
+  isTaken: boolean;
+  lateCount: number;
 }
 
-function MissedDoses() {
+interface Medication {
+  id: string;
+  medicineName: string;
+  notifications: Notification[];
+}
+
+const MissedDoses: React.FC = () => {
+  const [medications, setMedications] = useState<Medication[]>([]);
   const [missedMedications, setMissedMedications] = useState<
     {
       medicineName: string;
@@ -24,91 +28,127 @@ function MissedDoses() {
       isSevereLate: boolean;
     }[]
   >([]);
-  const [loading, setLoading] = useState(true);
 
-  const fetchMissedMedications = () => {
-    const currentUser = "userId_0001"; // Adjust this with actual user ID logic
+  const fetchMedications = () => {
+    console.log("Initializing Firestore real-time listener...");
+    const currentUser = "userId_0001"; // Replace with actual user logic
     const medicationsCollection = collection(
       db,
       `Users/${currentUser}/Medications`
     );
 
     onSnapshot(medicationsCollection, (querySnapshot) => {
-      const fetchedMissed: {
-        medicineName: string;
-        missedTime: string;
-        lateBy: string;
-        isSevereLate: boolean;
-      }[] = [];
-
+      const fetchedMedications: Medication[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data() as Medication;
-
-        if (data.notifications) {
-          data.notifications.forEach((notif) => {
-            const [hours, minutes] = notif.time.split(":").map(Number);
-            const notificationTime = new Date();
-            notificationTime.setHours(hours, minutes, 0);
-
-            const now = new Date();
-            const lateDuration = now.getTime() - notificationTime.getTime();
-
-            // Only process if the notification is late
-            if (lateDuration > 0 && notif.isLate && !notif.isTaken) {
-              // Format the time to "6:00 AM"
-              const formattedTime = notificationTime.toLocaleTimeString(
-                "en-US",
-                {
-                  hour: "numeric",
-                  minute: "2-digit",
-                  hour12: true,
-                }
-              );
-
-              // Convert lateDuration to hours and minutes
-              const lateHours = Math.floor(lateDuration / (1000 * 60 * 60));
-              const lateMinutes = Math.floor(
-                (lateDuration % (1000 * 60 * 60)) / (1000 * 60)
-              );
-
-              const lateBy =
-                lateHours > 0
-                  ? `${lateHours} hr${lateHours > 1 ? "s" : ""}${
-                      lateMinutes > 0 ? `, ${lateMinutes} min` : ""
-                    }`
-                  : `${lateMinutes} min`;
-
-              const isSevereLate = lateMinutes > 15 || lateHours > 0;
-
-              fetchedMissed.push({
-                medicineName: data.medicineName,
-                missedTime: formattedTime,
-                lateBy,
-                isSevereLate,
-              });
-            }
-          });
-        }
+        fetchedMedications.push({ ...data, id: doc.id });
       });
 
-      // Replace the state with the fetched missed medications
-      setMissedMedications(fetchedMissed);
-      setLoading(false);
+      console.log("Fetched medications data from Firestore:", fetchedMedications);
+      setMedications(fetchedMedications);
     });
   };
 
+  const markLateNotifications = async () => {
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString("en-GB", { hour12: false }); // HH:MM:SS
+
+    medications.forEach(async (medication) => {
+      const updatedNotifications = medication.notifications.map((notif) => {
+        const notificationTime = new Date(`${notif.date}T${notif.time}`);
+        const isLate =
+          !notif.isTaken &&
+          new Date(`${notif.date}T${currentTime}`) > notificationTime;
+
+        if (isLate && !notif.isLate) {
+          notif.isLate = true; // Mark as late
+        }
+        return notif;
+      });
+
+      // Update Firestore with the updated notifications if any changes were made
+      if (medication.notifications.some((notif) => notif.isLate)) {
+        const medicationDocRef = doc(
+          db,
+          `Users/userId_0001/Medications`,
+          medication.id
+        );
+        await updateDoc(medicationDocRef, { notifications: updatedNotifications });
+      }
+    });
+  };
+
+  const updateMissedMedications = () => {
+    const now = new Date();
+    const currentDate = now.toLocaleDateString("en-CA"); // YYYY-MM-DD
+    const updatedMissedMedications: {
+      medicineName: string;
+      missedTime: string;
+      lateBy: string;
+      isSevereLate: boolean;
+    }[] = [];
+
+    medications.forEach((medication) => {
+      medication.notifications
+        .filter((notif) => notif.isLate && notif.date === currentDate)
+        .forEach((notif) => {
+          const notificationTime = new Date(`${notif.date}T${notif.time}`);
+          const timeDifference = now.getTime() - notificationTime.getTime();
+          const lateHours = Math.floor(timeDifference / (1000 * 60 * 60));
+          const lateMinutes = Math.floor(
+            (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
+          );
+
+          const formattedTime = notificationTime.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+          const missedMedication = {
+            medicineName: medication.medicineName,
+            missedTime: formattedTime,
+            lateBy:
+              lateHours > 0
+                ? `${lateHours} hr${lateHours > 1 ? "s" : ""}${
+                    lateMinutes > 0 ? `, ${lateMinutes} min` : ""
+                  }`
+                : `${lateMinutes} min`,
+            isSevereLate: lateMinutes > 15 || lateHours > 0,
+          };
+
+          updatedMissedMedications.push(missedMedication);
+        });
+    });
+
+    setMissedMedications(updatedMissedMedications);
+
+    if (updatedMissedMedications.length > 0) {
+      console.log("Late Medications for Today:", updatedMissedMedications);
+    } else {
+      console.log("No late medications for today.");
+    }
+  };
+
   useEffect(() => {
-    fetchMissedMedications();
+    fetchMedications();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      markLateNotifications();
+      updateMissedMedications();
+    }, 1000); // Run every second
+
+    return () => clearInterval(interval);
+  }, [medications]);
 
   return (
     <div style={styles.card}>
-      <h2 style={styles.heading}>Missed Medicines</h2>
+      <h2 style={styles.heading}>Missed Medicines Today</h2>
 
       <div style={styles.medicationCardContainer}>
-        {loading ? (
-          <p style={styles.paragraph}>LOADING...</p>
-        ) : missedMedications.length > 0 ? (
+        {missedMedications.length > 0 ? (
           missedMedications.map((med, index) => (
             <MissedCard
               key={index}
@@ -119,12 +159,12 @@ function MissedDoses() {
             />
           ))
         ) : (
-          <p style={styles.paragraph}>No missed medications.</p>
+          <p style={styles.paragraph}>No missed medications for today.</p>
         )}
       </div>
     </div>
   );
-}
+};
 
 export default MissedDoses;
 
