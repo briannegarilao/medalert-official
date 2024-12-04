@@ -15,7 +15,7 @@ interface Medication {
   }[];
 }
 
-function Stock() {
+function MissedDoses() {
   const [missedMedications, setMissedMedications] = useState<
     {
       medicineName: string;
@@ -53,10 +53,8 @@ function Stock() {
             const now = new Date();
             const lateDuration = now.getTime() - notificationTime.getTime();
 
-            // Skip if the notification is not late yet
-            if (lateDuration <= 0) return;
-
-            if (notif.isLate && !notif.isTaken) {
+            // Only process if the notification is late
+            if (lateDuration > 0 && notif.isLate && !notif.isTaken) {
               // Format the time to "6:00 AM"
               const formattedTime = notificationTime.toLocaleTimeString(
                 "en-US",
@@ -93,6 +91,7 @@ function Stock() {
         }
       });
 
+      // Replace the state with the fetched missed medications
       setMissedMedications(fetchedMissed);
       setLoading(false);
     });
@@ -127,7 +126,7 @@ function Stock() {
   );
 }
 
-export default Stock;
+export default MissedDoses;
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
