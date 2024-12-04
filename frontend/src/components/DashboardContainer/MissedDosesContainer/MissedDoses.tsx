@@ -46,24 +46,26 @@ function Stock() {
 
         if (data.notifications) {
           data.notifications.forEach((notif) => {
+            const [hours, minutes] = notif.time.split(":").map(Number);
+            const notificationTime = new Date();
+            notificationTime.setHours(hours, minutes, 0);
+
+            const now = new Date();
+            const lateDuration = now.getTime() - notificationTime.getTime();
+
+            // Skip if the notification is not late yet
+            if (lateDuration <= 0) return;
+
             if (notif.isLate && !notif.isTaken) {
               // Format the time to "6:00 AM"
-              const [hours, minutes] = notif.time.split(":").map(Number);
-              const timeObject = new Date();
-              timeObject.setHours(hours, minutes, 0);
-
-              const formattedTime = timeObject.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-              });
-
-              // Calculate how late it is
-              const notificationTime = new Date();
-              notificationTime.setHours(hours, minutes, 0);
-
-              const now = new Date();
-              const lateDuration = now.getTime() - notificationTime.getTime();
+              const formattedTime = notificationTime.toLocaleTimeString(
+                "en-US",
+                {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                }
+              );
 
               // Convert lateDuration to hours and minutes
               const lateHours = Math.floor(lateDuration / (1000 * 60 * 60));

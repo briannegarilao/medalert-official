@@ -62,23 +62,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", // Align items in the center
+    alignItems: "flex-start",
   },
   profileContainer: {
     display: "flex",
     flexDirection: "row",
     gap: "1rem",
     alignItems: "center",
-    flexGrow: 1, // Allow the profile container to grow
-    maxWidth: "calc(100% - 50px)", // Prevent overlap with bellIcon
+    flexGrow: 1,
+    maxWidth: "calc(100% - 50px)",
   },
   profileDesc: {
     display: "flex",
     flexDirection: "column",
     textAlign: "left",
-    overflow: "hidden", // Ensure no overflow
-    flexGrow: 1, // Allow the description to take remaining space
-    minWidth: 0, // Required for text-overflow to work
+    overflow: "hidden",
+    flexGrow: 1,
+    minWidth: 0,
   },
   profileImage: {
     width: "100px",
@@ -86,7 +86,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "50%",
     border: "2px solid gray",
     textAlign: "center",
-    flexShrink: 0, // Prevent shrinking
+    flexShrink: 0,
   },
   profileNameLink: {
     textDecoration: "none",

@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import NotificationCard from "./NotificationCard";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import NotifSound from "../../../public/sounds/notification_sound.mp3";
 
 const Notifications: React.FC = () => {
   const [currentNotification, setCurrentNotification] = useState<{
     medicineName: string;
     time: string;
   } | null>(null);
+
+  const playNotificationSound = () => {
+    const audio = new Audio(NotifSound); // Use the imported sound file
+    audio
+      .play()
+      .catch((error) => console.error("Audio playback failed:", error));
+  };
 
   const fetchNotifications = async () => {
     const db = getFirestore();
@@ -24,12 +32,8 @@ const Notifications: React.FC = () => {
       const currentDate = now.toLocaleDateString("en-CA"); // Outputs YYYY-MM-DD in local timezone
       const currentTime = now.toLocaleTimeString("en-GB", { hour12: false }); // Outputs HH:MM:SS in local timezone
 
-      //   console.log("Current Time:", currentTime);
-      //   console.log("Current Date:", currentDate);
-
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        // console.log("Document Data:", data);
 
         const notifications = data.notifications;
         if (notifications) {
@@ -41,17 +45,13 @@ const Notifications: React.FC = () => {
               !notif.isMissed
           );
 
-          //   console.log("Due Notification:", dueNotification);
-
           if (dueNotification) {
-            // Create a Date object for local time
             const [hours, minutes, seconds] = dueNotification.time
               .split(":")
               .map(Number);
             const localTime = new Date();
             localTime.setHours(hours, minutes, seconds);
 
-            // Format the time as 12-hour with AM/PM
             const formattedTime = localTime.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "2-digit",
@@ -62,6 +62,9 @@ const Notifications: React.FC = () => {
               medicineName: data.medicineName,
               time: formattedTime,
             });
+
+            // Play the notification sound
+            playNotificationSound();
           }
         }
       });
