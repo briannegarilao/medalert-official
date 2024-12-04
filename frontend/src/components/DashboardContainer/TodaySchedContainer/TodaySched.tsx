@@ -14,6 +14,7 @@ interface Medication {
   datesToTake?: string[];
   backgroundColor?: string;
   notifications?: { date: string; time: string; isTaken: boolean }[];
+  totalStock?: number;
 }
 
 const TodaySched: React.FC = () => {
@@ -43,6 +44,7 @@ const TodaySched: React.FC = () => {
           datesToTake: data.datesToTake,
           backgroundColor: data.selectedColor,
           notifications: data.notifications,
+          totalStock: data.totalStock,
         };
 
         fetchedMedications.push(medication);
@@ -83,7 +85,14 @@ const TodaySched: React.FC = () => {
         notifications[matchingIndex].isTaken =
           !notifications[matchingIndex].isTaken;
 
-        // Log the updated notification details
+        // Recalculate currentStock
+        const takenCount = notifications.filter(
+          (notif) => notif.isTaken
+        ).length;
+        const newStock = (matchingMedication.totalStock ?? 0) - takenCount;
+
+        // Log the updated values
+        console.log(`New Stock: ${newStock}`);
         console.log(
           "Notification Details After Update:",
           notifications[matchingIndex]
@@ -100,6 +109,7 @@ const TodaySched: React.FC = () => {
 
             await updateDoc(medicationDocRef, {
               notifications: notifications,
+              currentStock: newStock,
             });
 
             console.log(
@@ -116,7 +126,11 @@ const TodaySched: React.FC = () => {
         setMedications((prevMedications) =>
           prevMedications.map((med) =>
             med.id === matchingMedication.id
-              ? { ...med, notifications: [...notifications] }
+              ? {
+                  ...med,
+                  notifications: [...notifications],
+                  currentStock: newStock,
+                }
               : med
           )
         );

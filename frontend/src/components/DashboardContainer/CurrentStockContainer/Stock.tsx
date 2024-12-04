@@ -69,9 +69,9 @@ function Stock() {
         )}
       </div>
 
-      {/* <button type="button" onClick={handleStatus} style={styles.checkStatsBtn}>
+      <button type="button" onClick={handleStatus} style={styles.checkStatsBtn}>
         Check all status
-      </button> */}
+      </button>
     </div>
   );
 }

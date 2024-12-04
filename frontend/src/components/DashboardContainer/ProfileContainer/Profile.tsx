@@ -37,8 +37,8 @@ function Profile() {
 
         <div style={styles.profileDesc}>
           <h2 style={{ fontSize: 24 }}>Profile</h2>
-          <Link to="/Profile" style={{ textDecoration: "none" }}>
-            <h2 style={{ fontSize: 32 }}>Hi {firstName}</h2>
+          <Link to="/Profile" style={styles.profileNameLink}>
+            <h2 style={styles.profileName}>Hi {firstName}</h2>
           </Link>
         </div>
       </div>
@@ -59,31 +59,53 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 8,
     border: `1px solid ${Colors.gray00}`,
     boxShadow: `0 4px 8px ${Colors.gray00}`,
-
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-
-    fontSize: 24,
+    alignItems: "center", // Align items in the center
   },
   profileContainer: {
     display: "flex",
     flexDirection: "row",
     gap: "1rem",
     alignItems: "center",
+    flexGrow: 1, // Allow the profile container to grow
+    maxWidth: "calc(100% - 50px)", // Prevent overlap with bellIcon
   },
   profileDesc: {
     display: "flex",
     flexDirection: "column",
     textAlign: "left",
+    overflow: "hidden", // Ensure no overflow
+    flexGrow: 1, // Allow the description to take remaining space
+    minWidth: 0, // Required for text-overflow to work
   },
   profileImage: {
     width: "100px",
     height: "100px",
-    backgroundColor: "lightblue",
     borderRadius: "50%",
     border: "2px solid gray",
     textAlign: "center",
+    flexShrink: 0, // Prevent shrinking
+  },
+  profileNameLink: {
+    textDecoration: "none",
+    width: "100%",
+    display: "block",
+  },
+  profileName: {
+    fontSize: 32,
+    whiteSpace: "nowrap", // Prevent wrapping
+    overflow: "hidden", // Hide overflowing text
+    textOverflow: "ellipsis", // Add ellipsis for overflowing text
+    maxWidth: "100%", // Prevent overflow beyond parent
+  },
+  bellIcon: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0.5rem",
+    borderRadius: "50%",
+    flexShrink: 0, // Prevent shrinking
   },
 };
