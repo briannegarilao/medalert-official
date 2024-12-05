@@ -9,6 +9,8 @@ interface Notification {
   isTaken: boolean;
   isMissed: boolean;
   medicineName?: string; // Include the medicine name for context
+  lateTime?: string; // Add lateTime
+  missedTime?: string; // Add missedTime
 }
 
 const Notifications: React.FC = () => {
@@ -16,6 +18,7 @@ const Notifications: React.FC = () => {
   const [currentNotification, setCurrentNotification] = useState<{
     medicineName: string;
     time: string;
+    type: "normal" | "warning" | "missed";
   } | null>(null);
   const [processedNotifications, setProcessedNotifications] = useState<
     Set<string>
@@ -28,8 +31,23 @@ const Notifications: React.FC = () => {
       .catch((error) => console.error("Audio playback failed:", error));
   };
 
+  const addLateAndMissedTimes = (notif: Notification): Notification => {
+    const [hours, minutes, seconds] = notif.time.split(":").map(Number);
+    const notifTime = new Date();
+    notifTime.setHours(hours, minutes, seconds);
+
+    const lateTime = new Date(notifTime.getTime() + 5 * 60 * 1000);
+    const missedTime = new Date(notifTime.getTime() + 15 * 60 * 1000);
+
+    return {
+      ...notif,
+      lateTime: lateTime.toLocaleTimeString("en-GB", { hour12: false }),
+      missedTime: missedTime.toLocaleTimeString("en-GB", { hour12: false }),
+    };
+  };
+
   const fetchNotifications = () => {
-    // console.log("Fetching notifications from Firestore...");
+    console.log("Fetching notifications from Firestore...");
     const db = getFirestore();
     const medicationsRef = collection(
       db,
@@ -38,25 +56,29 @@ const Notifications: React.FC = () => {
       "Medications"
     );
 
-    // Use Firestore onSnapshot for real-time updates
     onSnapshot(medicationsRef, (querySnapshot) => {
       const fetchedNotifications: Notification[] = [];
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        // console.log("Document data:", data);
 
         if (data.notifications) {
           fetchedNotifications.push(
-            ...data.notifications.map((notif: Notification) => ({
-              ...notif,
-              medicineName: data.medicineName, // Include medicine name for context
-            }))
+            ...data.notifications.map((notif: Notification) =>
+              addLateAndMissedTimes({
+                ...notif,
+                medicineName: data.medicineName, // Include medicine name for context
+              })
+            )
           );
         }
       });
 
-      // console.log("Fetched notifications:", fetchedNotifications);
+      console.log(
+        "Fetched notifications with lateTime and missedTime:",
+        fetchedNotifications
+      );
+
       setNotifications(fetchedNotifications);
     });
   };
@@ -66,37 +88,42 @@ const Notifications: React.FC = () => {
     const currentDate = now.toLocaleDateString("en-CA"); // YYYY-MM-DD
     const currentTime = now.toLocaleTimeString("en-GB", { hour12: false }); // HH:MM:SS
 
-    // console.log(`Checking notifications at ${currentDate} ${currentTime}...`);
-
     notifications.forEach((notif) => {
-      const notifKey = `${notif.date}-${notif.time}`; // Unique key for each notification
+      const notifKey = `${notif.date}-${notif.time}-${notif.lateTime}-${notif.missedTime}`; // Unique key for each notification
 
       if (
         notif.date === currentDate &&
-        notif.time === currentTime &&
         !notif.isTaken &&
-        !notif.isMissed &&
-        !processedNotifications.has(notifKey) // Avoid duplicate processing
+        !processedNotifications.has(notifKey)
       ) {
-        // console.log("Triggering notification:", notif);
-
-        const [hours, minutes, seconds] = notif.time.split(":").map(Number);
-        const notifTime = new Date();
-        notifTime.setHours(hours, minutes, seconds);
-
-        const formattedTime = notifTime.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        });
-
-        setCurrentNotification({
-          medicineName: notif.medicineName || "Unknown Medicine",
-          time: formattedTime,
-        });
-
-        playNotificationSound();
-        setProcessedNotifications((prev) => new Set(prev).add(notifKey));
+        if (notif.time === currentTime) {
+          // Normal notification
+          setCurrentNotification({
+            medicineName: notif.medicineName || "Unknown Medicine",
+            time: currentTime,
+            type: "normal",
+          });
+          playNotificationSound();
+          setProcessedNotifications((prev) => new Set(prev).add(notifKey));
+        } else if (notif.lateTime === currentTime) {
+          // Warning notification
+          setCurrentNotification({
+            medicineName: notif.medicineName || "Unknown Medicine",
+            time: currentTime,
+            type: "warning",
+          });
+          playNotificationSound();
+          setProcessedNotifications((prev) => new Set(prev).add(notifKey));
+        } else if (notif.missedTime === currentTime) {
+          // Missed notification
+          setCurrentNotification({
+            medicineName: notif.medicineName || "Unknown Medicine",
+            time: currentTime,
+            type: "missed",
+          });
+          playNotificationSound();
+          setProcessedNotifications((prev) => new Set(prev).add(notifKey));
+        }
       }
     });
   };
@@ -106,12 +133,11 @@ const Notifications: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Check notifications every minute
     const interval = setInterval(() => {
       checkAndTriggerNotifications();
-    }, 1000); // Run every minute
+    }, 1000);
 
-    return () => clearInterval(interval); // Cleanup interval
+    return () => clearInterval(interval);
   }, [notifications, processedNotifications]);
 
   return (
@@ -121,6 +147,7 @@ const Notifications: React.FC = () => {
           medicineName={currentNotification.medicineName}
           time={currentNotification.time}
           onClose={() => setCurrentNotification(null)}
+          type={currentNotification.type}
         />
       )}
     </div>

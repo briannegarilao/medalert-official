@@ -111,9 +111,8 @@ const MissedMeds: React.FC = () => {
         .filter(
           (notif) =>
             !notif.isTaken &&
-            notif.isLate &&
             notif.date === currentDate &&
-            notif.isMissed
+            (notif.isLate || notif.isMissed)
         )
         .forEach((notif) => {
           const notificationTime = new Date(`${notif.date}T${notif.time}`);
@@ -136,7 +135,7 @@ const MissedMeds: React.FC = () => {
                     lateMinutes > 0 ? `, ${lateMinutes} min` : ""
                   }`
                 : `${lateMinutes} min`,
-            isSevereLate: lateMinutes > 15 || lateHours > 0,
+            isSevereLate: notif.isMissed,
           });
         });
     });

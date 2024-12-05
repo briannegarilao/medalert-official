@@ -5,12 +5,14 @@ interface NotificationCardProps {
   medicineName: string;
   time: string;
   onClose: () => void;
+  type: "normal" | "warning" | "missed"; // Add type prop to determine card type
 }
 
 const NotificationCard: React.FC<NotificationCardProps> = ({
   medicineName,
   time,
   onClose,
+  type,
 }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -20,10 +22,42 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     return () => clearTimeout(timeout);
   }, [onClose]);
 
+  // Determine the content based on the type
+  const getContent = () => {
+    switch (type) {
+      case "normal":
+        return {
+          heading: "ON-TIME MEDICATION",
+          message: `Time for your ${medicineName}! 💊 It's ${time}. Take it now to stay on track and feel great! You've got this! 💪`,
+          backgroundColor: Colors.notifBlue00,
+        };
+      case "warning":
+        return {
+          heading: "MEDICATION REMINDER",
+          message: `You missed taking your ${medicineName} on time! 💊 It's ${time}. Please take it now to stay on track!`,
+          backgroundColor: Colors.warningOrage00,
+        };
+      case "missed":
+        return {
+          heading: "MISSED MEDICATION",
+          message: `Your ${medicineName} scheduled at ${time} is severely overdue! 🚨 Please take it immediately and stay safe.`,
+          backgroundColor: Colors.warningRed00,
+        };
+      default:
+        return {
+          heading: "NOTIFICATION",
+          message: "",
+          backgroundColor: Colors.gray00,
+        };
+    }
+  };
+
+  const { heading, message, backgroundColor } = getContent();
+
   return (
-    <div style={styles.container}>
+    <div style={{ ...styles.container, backgroundColor }}>
       <div style={styles.upperPart}>
-        <h3 style={styles.heading}>ON-TIME MEDICATION</h3>
+        <h3 style={styles.heading}>{heading}</h3>
         <button
           type="button"
           className="btn-close"
@@ -32,10 +66,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
           onClick={onClose}
         />
       </div>
-      <p style={styles.paragraph}>
-        Time for your {medicineName}! 💊 It's {time}. Take it now to stay on
-        track and feel great! You've got this! 💪
-      </p>
+      <p style={styles.paragraph}>{message}</p>
     </div>
   );
 };
@@ -45,7 +76,6 @@ export default NotificationCard;
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     width: 400,
-    backgroundColor: Colors.notifBlue00,
     borderRadius: 8,
     boxShadow: `0 4px 8px ${Colors.gray00}`,
     color: Colors.white00,
