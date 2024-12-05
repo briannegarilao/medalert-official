@@ -5,7 +5,7 @@ import { db } from "../../../../../firebaseConfig"; // Import your Firebase conf
 import Colors from "../../../../theme/Colors";
 
 function Profile() {
-  const [firstName, setFirstName] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("Loading..."); // Initial state for loading feedback
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -19,9 +19,11 @@ function Profile() {
           setFirstName(userData.firstName || "User");
         } else {
           console.error("User document does not exist!");
+          setFirstName("Error: No user found");
         }
       } catch (error) {
         console.error("Error fetching user name:", error);
+        setFirstName("Error: Unable to load");
       }
     };
 
@@ -95,10 +97,10 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   profileName: {
     fontSize: 32,
-    whiteSpace: "nowrap", // Prevent wrapping
-    overflow: "hidden", // Hide overflowing text
-    textOverflow: "ellipsis", // Add ellipsis for overflowing text
-    maxWidth: "100%", // Prevent overflow beyond parent
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "100%",
   },
   bellIcon: {
     display: "flex",
@@ -106,6 +108,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "center",
     padding: "0.5rem",
     borderRadius: "50%",
-    flexShrink: 0, // Prevent shrinking
+    flexShrink: 0,
   },
 };

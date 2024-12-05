@@ -15,7 +15,7 @@ function LogIn_Container() {
     } else {
       setError("");
       // Log in the user and navigate to the dashboard
-      console.log("Form submitted:", { email, password });
+      // console.log("Form submitted:", { email, password });
       navigate("/Dashboard"); // Redirects to the Dashboard page
     }
   };

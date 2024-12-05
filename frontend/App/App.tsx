@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LogIn from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import SignUp from "./pages/Signup";
-import HistoryLogs from "./pages/HistoryLogs";
-import SettingPage from "./pages/Settings";
-import ProfilePage from "./pages/ProfilePage";
+import LogIn from "../src/pages/Login";
+import Dashboard from "../src/pages/Dashboard";
+import SignUp from "../src/pages/Signup";
+import HistoryLogs from "../src/pages/HistoryLogs";
+import SettingPage from "../src/pages/Settings";
+import ProfilePage from "../src/pages/ProfilePage";
 
 function App() {
   return (

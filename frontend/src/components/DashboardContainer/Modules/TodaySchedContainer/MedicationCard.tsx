@@ -37,11 +37,11 @@ const MedicationCard: React.FC<MedicationCardProps> = ({
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState);
 
-    console.log(
-      `${medicationName} at ${time} checkbox ${
-        newCheckedState ? "highlighted" : "unhighlighted"
-      }`
-    );
+    // console.log(
+    //   `${medicationName} at ${time} checkbox ${
+    //     newCheckedState ? "highlighted" : "unhighlighted"
+    //   }`
+    // );
 
     if (onCheckboxChange && medicationName && time) {
       onCheckboxChange(medicationName, time, newCheckedState);

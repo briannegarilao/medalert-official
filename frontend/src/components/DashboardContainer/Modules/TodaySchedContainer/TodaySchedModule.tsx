@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../../firebaseConfig";
-import Module from "../../ModuleCards/Module"; 
+import Module from "../../ModuleCards/Module";
 import MedicationCard from "./MedicationCard";
 
 interface Medication {
@@ -23,7 +23,10 @@ const TodaySched: React.FC = () => {
 
   const fetchMedications = () => {
     const currentUser = "userId_0001";
-    const medicationsCollection = collection(db, `Users/${currentUser}/Medications`);
+    const medicationsCollection = collection(
+      db,
+      `Users/${currentUser}/Medications`
+    );
 
     onSnapshot(medicationsCollection, (querySnapshot) => {
       const fetchedMedications: Medication[] = [];
@@ -66,8 +69,11 @@ const TodaySched: React.FC = () => {
       );
 
       if (matchingIndex !== -1) {
-        notifications[matchingIndex].isTaken = !notifications[matchingIndex].isTaken;
-        const takenCount = notifications.filter((notif) => notif.isTaken).length;
+        notifications[matchingIndex].isTaken =
+          !notifications[matchingIndex].isTaken;
+        const takenCount = notifications.filter(
+          (notif) => notif.isTaken
+        ).length;
         const newStock = (matchingMedication.totalStock ?? 0) - takenCount;
 
         if (matchingMedication.id) {
@@ -85,7 +91,11 @@ const TodaySched: React.FC = () => {
           setMedications((prevMedications) =>
             prevMedications.map((med) =>
               med.id === matchingMedication.id
-                ? { ...med, notifications: [...notifications], currentStock: newStock }
+                ? {
+                    ...med,
+                    notifications: [...notifications],
+                    currentStock: newStock,
+                  }
                 : med
             )
           );

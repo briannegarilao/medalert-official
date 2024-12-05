@@ -17,7 +17,9 @@ const Notifications: React.FC = () => {
     medicineName: string;
     time: string;
   } | null>(null);
-  const [processedNotifications, setProcessedNotifications] = useState<Set<string>>(new Set());
+  const [processedNotifications, setProcessedNotifications] = useState<
+    Set<string>
+  >(new Set());
 
   const playNotificationSound = () => {
     const audio = new Audio(NotifSound);
@@ -29,7 +31,12 @@ const Notifications: React.FC = () => {
   const fetchNotifications = () => {
     // console.log("Fetching notifications from Firestore...");
     const db = getFirestore();
-    const medicationsRef = collection(db, "Users", "userId_0001", "Medications");
+    const medicationsRef = collection(
+      db,
+      "Users",
+      "userId_0001",
+      "Medications"
+    );
 
     // Use Firestore onSnapshot for real-time updates
     onSnapshot(medicationsRef, (querySnapshot) => {
@@ -121,4 +128,3 @@ const Notifications: React.FC = () => {
 };
 
 export default Notifications;
-

@@ -132,7 +132,7 @@ function Signup_Container() {
     e.preventDefault();
 
     if (validateForm()) {
-      console.log("Form Data:", formData);
+      // console.log("Form Data:", formData);
       toggleStep1Visibility();
       toggleStep2Visibility(); // Proceed to step 2
     }

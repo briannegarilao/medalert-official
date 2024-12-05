@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, doc, writeBatch } from "firebase/firestore";
 import { db } from "../../../../../firebaseConfig";
-import Module from "../../ModuleCards/Module"; // Import the reusable Module component
+import Module from "../../ModuleCards/Module";
 import MissedCard from "./MissedCard";
 
 interface Notification {
@@ -9,7 +9,6 @@ interface Notification {
   time: string;
   isLate: boolean;
   isTaken: boolean;
-  lateCount: number;
   isMissed: boolean;
 }
 
@@ -28,12 +27,16 @@ interface MissedMedication {
 
 const MissedMeds: React.FC = () => {
   const [medications, setMedications] = useState<Medication[]>([]);
-  const [missedMedications, setMissedMedications] = useState<MissedMedication[]>([]);
+  const [missedMedications, setMissedMedications] = useState<
+    MissedMedication[]
+  >([]);
 
   const fetchMedications = () => {
-    console.log("Initializing Firestore real-time listener...");
     const currentUser = "userId_0001";
-    const medicationsCollection = collection(db, `Users/${currentUser}/Medications`);
+    const medicationsCollection = collection(
+      db,
+      `Users/${currentUser}/Medications`
+    );
 
     onSnapshot(medicationsCollection, (querySnapshot) => {
       const fetchedMedications: Medication[] = [];
@@ -42,36 +45,33 @@ const MissedMeds: React.FC = () => {
         fetchedMedications.push({ ...data, id: doc.id });
       });
 
-      console.log("Fetched medications data from Firestore:", fetchedMedications);
       setMedications(fetchedMedications);
-
-      // Perform initial marking on first fetch
       markLateNotifications(fetchedMedications);
     });
   };
 
-  const markLateNotifications = async (fetchedMedications: Medication[] = medications) => {
+  const markLateNotifications = async (
+    fetchedMedications: Medication[] = medications
+  ) => {
     const now = new Date();
     const currentTime = now.getTime();
     const batch = writeBatch(db);
 
-    fetchedMedications.forEach((medication) => {
+    const updatedMedications = fetchedMedications.map((medication) => {
       let needsUpdate = false;
 
       const updatedNotifications = medication.notifications.map((notif) => {
-        const notificationTime = new Date(`${notif.date}T${notif.time}`).getTime();
+        const notificationTime = new Date(
+          `${notif.date}T${notif.time}`
+        ).getTime();
         const timeDifference = currentTime - notificationTime;
 
-        if (!notif.isTaken && !notif.isMissed) {
-          // Mark as late and increment lateCount
-          if (timeDifference >= (notif.lateCount + 1) * 5 * 60 * 1000) {
+        if (!notif.isTaken) {
+          if (!notif.isLate && timeDifference >= 5 * 60 * 1000) {
             notif.isLate = true;
-            notif.lateCount = (notif.lateCount || 0) + 1;
             needsUpdate = true;
           }
-
-          // Mark as missed if lateCount > 3
-          if (notif.lateCount > 3 && !notif.isMissed) {
+          if (!notif.isMissed && timeDifference >= 15 * 60 * 1000) {
             notif.isMissed = true;
             needsUpdate = true;
           }
@@ -80,7 +80,6 @@ const MissedMeds: React.FC = () => {
         return notif;
       });
 
-      // Only update Firestore if there are actual changes
       if (needsUpdate) {
         const medicationDocRef = doc(
           db,
@@ -89,13 +88,16 @@ const MissedMeds: React.FC = () => {
         );
         batch.update(medicationDocRef, { notifications: updatedNotifications });
       }
+
+      return { ...medication, notifications: updatedNotifications };
     });
+
+    setMedications(updatedMedications);
 
     try {
       await batch.commit();
-      console.log("Updated late and missed notifications in Firestore.");
     } catch (error) {
-      console.error("Error updating notifications:", error);
+      console.error("Error updating Firestore:", error);
     }
   };
 
@@ -106,7 +108,13 @@ const MissedMeds: React.FC = () => {
 
     medications.forEach((medication) => {
       medication.notifications
-        .filter((notif) => notif.isLate && notif.date === currentDate)
+        .filter(
+          (notif) =>
+            !notif.isTaken &&
+            notif.isLate &&
+            notif.date === currentDate &&
+            notif.isMissed
+        )
         .forEach((notif) => {
           const notificationTime = new Date(`${notif.date}T${notif.time}`);
           const timeDifference = now.getTime() - notificationTime.getTime();
@@ -134,12 +142,6 @@ const MissedMeds: React.FC = () => {
     });
 
     setMissedMedications(updatedMissedMedications);
-
-    if (updatedMissedMedications.length > 0) {
-      console.log("Late Medications for Today:", updatedMissedMedications);
-    } else {
-      console.log("No late medications for today.");
-    }
   };
 
   useEffect(() => {

@@ -83,7 +83,6 @@ function AddMedicineBtn() {
         time: time,
         isTaken: false,
         isLate: false,
-        lateCount: 0,
         isMissed: false,
       }))
     );
