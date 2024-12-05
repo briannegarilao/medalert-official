@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NotificationCard from "./NotificationCard";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
-import NotifSound from "../../../public/sounds/notification_sound.mp3";
+import NotifSound from "../../sounds/notification_sound.mp3";
 
 interface Notification {
   date: string;
