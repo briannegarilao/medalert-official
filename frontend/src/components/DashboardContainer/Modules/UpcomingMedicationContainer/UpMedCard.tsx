@@ -1,5 +1,5 @@
 import React from "react";
-import Colors from "../../../theme/Colors";
+import Colors from "../../../../theme/Colors";
 
 interface MedicationCardProps {
   medicationName?: string;

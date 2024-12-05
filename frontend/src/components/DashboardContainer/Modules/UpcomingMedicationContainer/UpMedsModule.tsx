@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../../../firebaseConfig";
-
+import { db } from "../../../../../firebaseConfig";
+import Module from "../../ModuleCards/Module"; // Import the reusable module
 import DateSelector from "./DateSelector";
-import MedicationCard from "./MedicationCard";
-import Colors from "../../../theme/Colors";
+import MedicationCard from "./UpMedCard";
 
 // Medication interface
 interface Medication {
@@ -91,9 +90,7 @@ const UpMedSched: React.FC = () => {
   const filteredMedications = getFilteredMedications();
 
   return (
-    <div style={styles.card}>
-      <h2 style={styles.heading}>Upcoming Medication Schedule</h2>
-
+    <Module title="Upcoming Medication Schedule">
       <DateSelector
         selectedDate={selectedDate}
         onDateChange={(newDate) => setSelectedDate(newDate)}
@@ -112,30 +109,17 @@ const UpMedSched: React.FC = () => {
           ))
         ) : (
           <p style={styles.paragraph}>
-            No medications scheduled for {new Date(selectedDate).toDateString()}
-            .
+            No medications scheduled for {new Date(selectedDate).toDateString()}.
           </p>
         )}
       </div>
-    </div>
+    </Module>
   );
 };
 
 export default UpMedSched;
 
 const styles: { [key: string]: React.CSSProperties } = {
-  card: {
-    width: "100%",
-    height: "100%",
-    padding: "1rem",
-    borderRadius: 8,
-    border: `1px solid ${Colors.gray00}`,
-    boxShadow: `0 4px 8px ${Colors.gray00}`,
-    display: "flex",
-    flexDirection: "column",
-    overflowY: "hidden",
-    gap: 16,
-  },
   medicationCardContainer: {
     width: "100%",
     height: "100%",
@@ -144,10 +128,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     gap: 16,
     overflowY: "auto",
-  },
-  heading: {
-    fontSize: 24,
-    textAlign: "center",
   },
   paragraph: {
     fontSize: 16,

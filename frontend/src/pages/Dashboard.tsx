@@ -1,11 +1,11 @@
 import "../App.css";
-import Sidebar from "../components/Sidebar";
-import AddMedicineBtn from "../components/DashboardContainer/NewMedicine/AddMedicineBtn";
-import MissedDoses from "../components/DashboardContainer/MissedDosesContainer/MissedDoses";
-import Stock from "../components/DashboardContainer/CurrentStockContainer/Stock";
-import Profile from "../components/DashboardContainer/ProfileContainer/Profile";
-import UpMedSched from "../components/DashboardContainer/UpcomingMedicationContainer/UpMedSched";
-import TodaySched from "../components/DashboardContainer/TodaySchedContainer/TodaySched";
+// import Sidebar from "../components/Sidebar";
+import AddMedicineBtn from "../components/DashboardContainer/NewMedicineContainer/AddMedicineBtn";
+import MissedDoses from "../components/DashboardContainer/Modules/MissedMedContainer/MissedMedsModule";
+import Stock from "../components/DashboardContainer/Modules/CurrentStockContainer/StockModule";
+import Profile from "../components/DashboardContainer/Modules/ProfileContainer/ProfileModule";
+import UpMedSched from "../components/DashboardContainer/Modules/UpcomingMedicationContainer/UpMedsModule";
+import TodaySched from "../components/DashboardContainer/Modules/TodaySchedContainer/TodaySchedModule";
 import Colors from "../theme/Colors";
 import Notifications from "../components/Notification/Notifications";
 
@@ -16,9 +16,9 @@ function Dashboard() {
         <Notifications />
       </div>
 
-      <div>
+      {/* <div>
         <Sidebar />
-      </div>
+      </div> */}
 
       <div style={styles.dashboardContainer}>
         <div style={styles.addMedAndTodaySched}>

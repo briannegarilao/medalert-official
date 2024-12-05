@@ -1,5 +1,5 @@
 import React from "react";
-import Colors from "../../../theme/Colors"; // Make sure Colors is imported
+import Colors from "../../../../theme/Colors"; // Make sure Colors is imported
 
 interface StockCardProps {
   medicationName: string;

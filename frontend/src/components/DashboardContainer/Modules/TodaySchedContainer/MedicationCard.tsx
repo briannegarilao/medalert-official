@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
-import Colors from "../../../theme/Colors";
+import Colors from "../../../../theme/Colors";
 
 interface MedicationCardProps {
   medicationName?: string;

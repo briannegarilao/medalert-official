@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../../../firebaseConfig";
+import { db } from "../../../../../firebaseConfig";
 import StockCard from "./StockCard";
-import Colors from "../../../theme/Colors";
+import Module from "../../ModuleCards/Module"; // Import the reusable Module component
+import Colors from "../../../../theme/Colors";
 
 interface Medication {
   medicationName: string;
   currentStock: number;
 }
 
-function Stock() {
+const Stock: React.FC = () => {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,9 +51,7 @@ function Stock() {
   };
 
   return (
-    <div style={styles.card}>
-      <h2 style={styles.heading}>Current Stock</h2>
-
+    <Module title="Current Stock">
       <div style={styles.medicationCardContainer}>
         {loading ? (
           <p style={styles.paragraph}>LOADING...</p>
@@ -65,39 +64,20 @@ function Stock() {
             />
           ))
         ) : (
-          <p style={styles.paragraph}>No medications scheduled for today.</p>
+          <p style={styles.paragraph}>No medications available in stock.</p>
         )}
       </div>
 
       <button type="button" onClick={handleStatus} style={styles.checkStatsBtn}>
         Check all status
       </button>
-    </div>
+    </Module>
   );
-}
+};
 
 export default Stock;
 
 const styles: { [key: string]: React.CSSProperties } = {
-  card: {
-    width: "100%",
-    height: "100%",
-    padding: "1rem",
-    borderRadius: 8,
-    border: `1px solid ${Colors.gray00}`,
-    boxShadow: `0 4px 8px ${Colors.gray00}`,
-    display: "flex",
-    flexDirection: "column",
-    overflowY: "hidden",
-    gap: 8,
-  },
-  heading: {
-    fontSize: 24,
-    textAlign: "center",
-  },
-  paragraph: {
-    fontSize: 16,
-  },
   medicationCardContainer: {
     width: "100%",
     height: "100%",
@@ -106,6 +86,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     gap: 16,
     overflowY: "auto",
+  },
+  paragraph: {
+    fontSize: 16,
+    textAlign: "center",
   },
   checkStatsBtn: {
     width: "100%",

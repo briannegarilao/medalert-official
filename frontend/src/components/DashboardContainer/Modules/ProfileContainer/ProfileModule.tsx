@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../../../firebaseConfig"; // Import your Firebase config
-import Colors from "../../../theme/Colors";
+import { db } from "../../../../../firebaseConfig"; // Import your Firebase config
+import Colors from "../../../../theme/Colors";
 
 function Profile() {
   const [firstName, setFirstName] = useState<string>("");
