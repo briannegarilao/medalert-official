@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import NotificationCard from "./NotificationCard";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import NotifSound from "../../sounds/notification_sound.mp3";
+import { sendMissedMedicationEmail } from './../../hooks/useSendEmail';
 
 interface Notification {
   date: string;
@@ -83,12 +84,13 @@ const Notifications: React.FC = () => {
     });
   };
 
+
   const checkAndTriggerNotifications = () => {
     const now = new Date();
     const currentDate = now.toLocaleDateString("en-CA"); // YYYY-MM-DD
     const currentTime = now.toLocaleTimeString("en-GB", { hour12: false }); // HH:MM:SS
 
-    notifications.forEach((notif) => {
+    notifications.forEach(async (notif) => {
       const notifKey = `${notif.date}-${notif.time}-${notif.lateTime}-${notif.missedTime}`; // Unique key for each notification
 
       if (
@@ -123,6 +125,14 @@ const Notifications: React.FC = () => {
           });
           playNotificationSound();
           setProcessedNotifications((prev) => new Set(prev).add(notifKey));
+
+          // Send missed medication email
+          await sendMissedMedicationEmail(
+            "userId_0001", // Hardcoded user ID
+            notif.medicineName || "Unknown Medicine",
+            notif.date,
+            notif.time
+          );
         }
       }
     });

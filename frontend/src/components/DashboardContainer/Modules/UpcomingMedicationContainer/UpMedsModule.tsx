@@ -96,7 +96,7 @@ const UpMedSched: React.FC = () => {
         onDateChange={(newDate) => setSelectedDate(newDate)}
       />
 
-      <div style={styles.medicationCardContainer}>
+      <div style={styles.container}>
         {loading ? (
           <p style={styles.paragraph}>LOADING...</p>
         ) : filteredMedications.length > 0 ? (
@@ -109,7 +109,8 @@ const UpMedSched: React.FC = () => {
           ))
         ) : (
           <p style={styles.paragraph}>
-            No medications scheduled for {new Date(selectedDate).toDateString()}.
+            No medications scheduled for {new Date(selectedDate).toDateString()}
+            .
           </p>
         )}
       </div>
@@ -120,14 +121,15 @@ const UpMedSched: React.FC = () => {
 export default UpMedSched;
 
 const styles: { [key: string]: React.CSSProperties } = {
-  medicationCardContainer: {
-    width: "100%",
+  container: {
     height: "100%",
-    borderRadius: 8,
+    width: "100%",
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
     gap: 16,
     overflowY: "auto",
+    borderRadius: 8,
   },
   paragraph: {
     fontSize: 16,

@@ -89,6 +89,7 @@ export default MedicationCard;
 
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
+    width: "100%",
     backgroundColor: "black",
     padding: "1rem",
     borderRadius: 8,

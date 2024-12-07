@@ -129,27 +129,29 @@ const TodaySched: React.FC = () => {
 
   return (
     <Module title="Today's Medications">
-      {loading ? (
-        <p style={styles.paragraph}>LOADING...</p>
-      ) : todaysMedications.length > 0 ? (
-        todaysMedications.map((med, index) =>
-          med.timesPerDay?.map(({ time, formattedTime, isTaken }) => (
-            <MedicationCard
-              key={`${index}-${time}`}
-              medicationName={med.medicationName}
-              dosageValue={med.dosageValue}
-              dosageUnit={med.dosageUnit}
-              specialInstruction={med.specialInstruction}
-              backgroundColor={med.backgroundColor}
-              time={formattedTime}
-              isTaken={isTaken}
-              onCheckboxChange={(name) => handleCheckboxChange(name, time)}
-            />
-          ))
-        )
-      ) : (
-        <p style={styles.paragraph}>No medications scheduled for today.</p>
-      )}
+      <div style={styles.container}>
+        {loading ? (
+          <p style={styles.paragraph}>LOADING...</p>
+        ) : todaysMedications.length > 0 ? (
+          todaysMedications.map((med, index) =>
+            med.timesPerDay?.map(({ time, formattedTime, isTaken }) => (
+              <MedicationCard
+                key={`${index}-${time}`}
+                medicationName={med.medicationName}
+                dosageValue={med.dosageValue}
+                dosageUnit={med.dosageUnit}
+                specialInstruction={med.specialInstruction}
+                backgroundColor={med.backgroundColor}
+                time={formattedTime}
+                isTaken={isTaken}
+                onCheckboxChange={(name) => handleCheckboxChange(name, time)}
+              />
+            ))
+          )
+        ) : (
+          <p style={styles.paragraph}>No medications scheduled for today.</p>
+        )}
+      </div>
     </Module>
   );
 };
@@ -157,6 +159,16 @@ const TodaySched: React.FC = () => {
 export default TodaySched;
 
 const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 16,
+    overflowY: "auto",
+    borderRadius: 8,
+  },
   paragraph: {
     fontSize: 16,
     textAlign: "center",

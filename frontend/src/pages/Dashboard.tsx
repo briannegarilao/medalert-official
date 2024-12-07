@@ -10,6 +10,7 @@ import Notifications from "../components/NotificationContainer/Notifications";
 import Sidebar from "../components/Sidebar";
 
 function Dashboard() {
+
   return (
     <div style={styles.mainContainer}>
       <div style={styles.notifications}>

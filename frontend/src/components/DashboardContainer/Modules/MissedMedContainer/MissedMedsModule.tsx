@@ -46,18 +46,15 @@ const MissedMeds: React.FC = () => {
       });
 
       setMedications(fetchedMedications);
-      markLateNotifications(fetchedMedications);
     });
   };
 
-  const markLateNotifications = async (
-    fetchedMedications: Medication[] = medications
-  ) => {
+  const markLateNotifications = () => {
     const now = new Date();
     const currentTime = now.getTime();
     const batch = writeBatch(db);
 
-    const updatedMedications = fetchedMedications.map((medication) => {
+    const updatedMedications = medications.map((medication) => {
       let needsUpdate = false;
 
       const updatedNotifications = medication.notifications.map((notif) => {
@@ -94,11 +91,9 @@ const MissedMeds: React.FC = () => {
 
     setMedications(updatedMedications);
 
-    try {
-      await batch.commit();
-    } catch (error) {
-      console.error("Error updating Firestore:", error);
-    }
+    batch
+      .commit()
+      .catch((error) => console.error("Error updating Firestore:", error));
   };
 
   const updateMissedMedications = () => {
@@ -148,11 +143,11 @@ const MissedMeds: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const writeInterval = setInterval(() => {
+    const interval = setInterval(() => {
       markLateNotifications();
-    }, 60000);
+    }, 3000);
 
-    return () => clearInterval(writeInterval);
+    return () => clearInterval(interval);
   }, [medications]);
 
   useEffect(() => {
@@ -165,19 +160,21 @@ const MissedMeds: React.FC = () => {
 
   return (
     <Module title="Missed Medicines Today">
-      {missedMedications.length > 0 ? (
-        missedMedications.map((med, index) => (
-          <MissedCard
-            key={index}
-            medicationName={med.medicationName}
-            missedTime={med.missedTime}
-            lateBy={med.lateBy}
-            isSevereLate={med.isSevereLate}
-          />
-        ))
-      ) : (
-        <p style={styles.paragraph}>No missed medications for today.</p>
-      )}
+      <div style={styles.missedMedsContainer}>
+        {missedMedications.length > 0 ? (
+          missedMedications.map((med, index) => (
+            <MissedCard
+              key={index}
+              medicationName={med.medicationName}
+              missedTime={med.missedTime}
+              lateBy={med.lateBy}
+              isSevereLate={med.isSevereLate}
+            />
+          ))
+        ) : (
+          <p style={styles.paragraph}>No missed medications for today.</p>
+        )}
+      </div>
     </Module>
   );
 };
@@ -185,6 +182,16 @@ const MissedMeds: React.FC = () => {
 export default MissedMeds;
 
 const styles: { [key: string]: React.CSSProperties } = {
+  missedMedsContainer: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 16,
+    overflowY: "auto",
+    borderRadius: 8,
+  },
   paragraph: {
     fontSize: 16,
     textAlign: "center",
