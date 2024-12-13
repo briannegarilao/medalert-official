@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../../../../firebaseConfig";
-import Module from "../../ModuleCards/Module"; // Import the reusable module
+import Module from "../../../ModuleCards/Module"; // Import the reusable module
 import DateSelector from "./DateSelector";
 import MedicationCard from "./UpMedCard";
 

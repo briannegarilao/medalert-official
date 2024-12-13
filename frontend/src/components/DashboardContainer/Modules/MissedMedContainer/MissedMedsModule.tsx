@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, doc, writeBatch } from "firebase/firestore";
 import { db } from "../../../../../firebaseConfig";
-import Module from "../../ModuleCards/Module";
+import Module from "../../../ModuleCards/Module";
 import MissedCard from "./MissedCard";
 
 interface Notification {
@@ -15,7 +15,18 @@ interface Notification {
 interface Medication {
   id: string;
   medicineName: string;
+  dosageValue: string;
+  dosageUnit: string;
+  timesPerDay: string[];
   notifications: Notification[];
+  history?: Array<{
+    date: string;
+    time: string;
+    medicineName: string;
+    dosage: string;
+    frequency: string;
+    status: string;
+  }>;
 }
 
 interface MissedMedication {
@@ -71,6 +82,29 @@ const MissedMeds: React.FC = () => {
           if (!notif.isMissed && timeDifference >= 15 * 60 * 1000) {
             notif.isMissed = true;
             needsUpdate = true;
+
+            // Add history log entry
+            const historyLog = {
+              date: notif.date,
+              time: notif.time,
+              medicineName: medication.medicineName,
+              dosage: `${medication.dosageValue}${medication.dosageUnit}`,
+              frequency: `${medication.timesPerDay.length} times a day`,
+              status: "Missed",
+            };
+
+            // Log when something is added to the history
+            console.log("Adding to history:", historyLog);
+
+            // Update the history array in the Firestore document
+            const medicationDocRef = doc(
+              db,
+              `Users/userId_0001/Medications`,
+              medication.id
+            );
+            batch.update(medicationDocRef, {
+              history: [...(medication.history || []), historyLog], // Append to existing history
+            });
           }
         }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NotificationCard from "./NotificationCard";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import NotifSound from "../../sounds/notification_sound.mp3";
-import { sendMissedMedicationEmail } from './../../hooks/useSendEmail';
+import { sendMissedMedicationEmail } from "./../../hooks/useSendEmail";
 
 interface Notification {
   date: string;
@@ -83,7 +83,6 @@ const Notifications: React.FC = () => {
       setNotifications(fetchedNotifications);
     });
   };
-
 
   const checkAndTriggerNotifications = () => {
     const now = new Date();

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../../../../firebaseConfig";
 import StockCard from "./StockCard";
-import Module from "../../ModuleCards/Module"; // Import the reusable Module component
+import Module from "../../../ModuleCards/Module"; // Import the reusable Module component
 import Colors from "../../../../theme/Colors";
 
 interface Medication {
@@ -15,7 +15,7 @@ const Stock: React.FC = () => {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // Fetch medications from Firestore
   const fetchMedications = () => {
@@ -46,9 +46,9 @@ const Stock: React.FC = () => {
     fetchMedications();
   }, []);
 
-  const handleStatus = () => {
-    navigate("/HistoryLogs");
-  };
+  // const handleStatus = () => {
+  //   navigate("/HistoryLogs");
+  // };
 
   return (
     <Module title="Current Stock">
@@ -68,9 +68,9 @@ const Stock: React.FC = () => {
         )}
       </div>
 
-      <button type="button" onClick={handleStatus} style={styles.checkStatsBtn}>
+      {/* <button type="button" onClick={handleStatus} style={styles.checkStatsBtn}>
         Check all status
-      </button>
+      </button> */}
     </Module>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../../firebaseConfig";
-import Module from "../../ModuleCards/Module";
+import Module from "../../../ModuleCards/Module";
 import MedicationCard from "./MedicationCard";
 
 interface Medication {
@@ -13,8 +13,22 @@ interface Medication {
   timesPerDay?: string[];
   datesToTake?: string[];
   backgroundColor?: string;
-  notifications?: { date: string; time: string; isTaken: boolean }[];
+  notifications?: {
+    date: string;
+    time: string;
+    isTaken: boolean;
+    isLate?: boolean;
+    isMissed?: boolean;
+  }[];
   totalStock?: number;
+  history?: {
+    date: string;
+    time: string;
+    medicineName: string;
+    dosage: string;
+    frequency: string;
+    status: string;
+  }[];
 }
 
 const TodaySched: React.FC = () => {
@@ -24,7 +38,7 @@ const TodaySched: React.FC = () => {
   const fetchMedications = () => {
     const currentUser = "userId_0001";
     const medicationsCollection = collection(
-      db,
+      db, 
       `Users/${currentUser}/Medications`
     );
 
@@ -33,7 +47,6 @@ const TodaySched: React.FC = () => {
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-
         const medication: Medication = {
           id: doc.id,
           medicationName: data.medicineName,
@@ -45,6 +58,7 @@ const TodaySched: React.FC = () => {
           backgroundColor: data.selectedColor,
           notifications: data.notifications,
           totalStock: data.totalStock,
+          history: data.history || [],
         };
 
         fetchedMedications.push(medication);
@@ -56,51 +70,101 @@ const TodaySched: React.FC = () => {
   };
 
   const handleCheckboxChange = async (medicationName: string, time: string) => {
-    const matchingMedication = medications.find(
-      (med) =>
-        med.medicationName === medicationName && med.timesPerDay?.includes(time)
-    );
-
-    if (matchingMedication) {
-      const today = new Date().toLocaleDateString("en-CA");
-      const notifications = matchingMedication.notifications || [];
-      const matchingIndex = notifications.findIndex(
-        (notif) => notif.date === today && notif.time === time
+    try {
+      const matchingMedication = medications.find(
+        (med) =>
+          med.medicationName === medicationName &&
+          med.timesPerDay?.includes(time)
       );
 
-      if (matchingIndex !== -1) {
-        notifications[matchingIndex].isTaken =
-          !notifications[matchingIndex].isTaken;
-        const takenCount = notifications.filter(
-          (notif) => notif.isTaken
-        ).length;
-        const newStock = (matchingMedication.totalStock ?? 0) - takenCount;
+      if (matchingMedication) {
+        const today = new Date().toLocaleDateString("en-CA");
+        const now = new Date().toLocaleTimeString("en-GB", { hour12: false });
+        const notifications = matchingMedication.notifications || [];
+        const matchingIndex = notifications.findIndex(
+          (notif) => notif.date === today && notif.time === time
+        );
 
-        if (matchingMedication.id) {
-          const medicationDocRef = doc(
-            db,
-            `Users/userId_0001/Medications`,
-            matchingMedication.id
+        if (matchingIndex !== -1) {
+          const updatedNotifications = [...notifications];
+          const previousState = updatedNotifications[matchingIndex].isTaken;
+          updatedNotifications[matchingIndex].isTaken = !previousState;
+
+          const takenCount = updatedNotifications.filter(
+            (notif) => notif.isTaken
+          ).length;
+
+          const newStock = (matchingMedication.totalStock ?? 0) - takenCount;
+
+          // Determine status for history
+          let status = "Taken";
+          if (updatedNotifications[matchingIndex].isMissed) {
+            status = "Taken Missed";
+          } else if (updatedNotifications[matchingIndex].isLate) {
+            status = "Taken Late";
+          }
+
+          // Log actions
+          console.log(
+            `Action: ${status} | Medicine: ${medicationName} | Time: ${time}`
           );
 
-          await updateDoc(medicationDocRef, {
-            notifications: notifications,
-            currentStock: newStock,
-          });
+          const newHistoryEntry = {
+            date: today,
+            time: now,
+            medicineName: matchingMedication.medicationName || "Unknown",
+            dosage: `${matchingMedication.dosageValue}${matchingMedication.dosageUnit}`,
+            frequency: `${
+              matchingMedication.timesPerDay?.length || 1
+            } times a day`,
+            status,
+          };
 
-          setMedications((prevMedications) =>
-            prevMedications.map((med) =>
-              med.id === matchingMedication.id
-                ? {
-                    ...med,
-                    notifications: [...notifications],
-                    currentStock: newStock,
-                  }
-                : med
-            )
-          );
+          const updatedHistory = [
+            ...(matchingMedication.history || []),
+            newHistoryEntry,
+          ];
+
+          if (matchingMedication.id) {
+            const medicationDocRef = doc(
+              db,
+              `Users/userId_0001/Medications`,
+              matchingMedication.id
+            );
+
+            // Update Firebase
+            await updateDoc(medicationDocRef, {
+              notifications: updatedNotifications,
+              currentStock: newStock,
+              history: updatedHistory,
+            });
+
+            console.log(
+              `History updated for ${medicationName}: `,
+              newHistoryEntry
+            );
+
+            // Update local state
+            setMedications((prevMedications) =>
+              prevMedications.map((med) =>
+                med.id === matchingMedication.id
+                  ? {
+                      ...med,
+                      notifications: updatedNotifications,
+                      currentStock: newStock,
+                      history: updatedHistory,
+                    }
+                  : med
+              )
+            );
+          }
         }
       }
+    } catch (error) {
+      console.error(
+        `Error updating 'isTaken' for ${medicationName} at ${time}: `,
+        error
+      );
     }
   };
 
